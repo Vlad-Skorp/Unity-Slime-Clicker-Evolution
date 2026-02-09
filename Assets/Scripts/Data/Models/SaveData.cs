@@ -20,6 +20,7 @@ namespace SlimeRpgEvolution2D.Data
     public class GameSaveData
     {
         public int coins;
+        public string selectedCharacterID = "DefaultPlayer";
         public List<WeaponSaveData> weapons = new List<WeaponSaveData>();
     }    
 }

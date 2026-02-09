@@ -1,0 +1,10 @@
+{
+    "name": "Test",
+    "optionalUnityReferences": [
+        "TestAssemblies"
+    ],
+    "references": [
+        "SlimeRpgEvolution2D_Game" 
+    ]
+}
+

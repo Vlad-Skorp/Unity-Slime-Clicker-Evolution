@@ -1,3 +1,4 @@
 ﻿<Solution>
-  <Project Path="Assembly-CSharp.csproj" />
+  <Project Path="SlimeRpgEvolution2D_Game.csproj" />
+  <Project Path="Test.csproj" />
 </Solution>

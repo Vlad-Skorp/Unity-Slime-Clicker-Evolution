@@ -1,10 +1,17 @@
 using SlimeRpgEvolution2D.Data;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "PlayerConfig", menuName ="Data/PlayerConfig")]
+[CreateAssetMenu(fileName = "PlayerConfig", menuName = "Config/Entities/PlayerConfig")]
 public class PlayerConfig : ScriptableObject
 {
+    [SerializeField] private string _characterID;
+    public string CharacterID => _characterID;
+    [SerializeField] private string _characterName;
+    public string CharacterName => _characterName;
+
+
     [Header("Damage Settings")]
     [SerializeField] private int _baseDamage = 1;
 
@@ -14,18 +21,17 @@ public class PlayerConfig : ScriptableObject
 
     public int CalculateTotalDamage(GameSaveData saveData)
     {
-        int total = _baseDamage;
+        if (saveData == null) return _baseDamage;
 
-        foreach(var savedWeapon in saveData.weapons)
+        int weaponDamage = saveData.weapons?.Sum(savedWeapon =>
         {
-            WeaponConfig config = allWeapons.Find(w => w.weaponID == savedWeapon.weaponID);
+            if (savedWeapon == null) return 0;
 
-            if(config != null)
-            {
-                total += config.GetDamageAtLevel(savedWeapon.currentLevel);
-            }
-        }
+            var config = allWeapons.Find(w => w.weaponID == savedWeapon.weaponID);
+            return config != null ? config.GetDamageAtLevel(savedWeapon.currentLevel) : 0;
 
-        return total;
+        }) ?? 0;
+
+        return _baseDamage + weaponDamage;
     }
 }
