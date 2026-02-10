@@ -58,7 +58,12 @@ public class Enemy : MonoBehaviour, IDamageable
         OnHealthChanged?.Invoke(healthPercent);
 
         if (_currentHealth <= 0) Die();
-        else _animator.SetTrigger("Hit");
+        else
+        {
+            int randomHit = UnityEngine.Random.Range(0, 3);
+            _animator.SetInteger("HitType", randomHit);
+            _animator.SetTrigger("Hit");
+        }
     }
 
     private void Die()

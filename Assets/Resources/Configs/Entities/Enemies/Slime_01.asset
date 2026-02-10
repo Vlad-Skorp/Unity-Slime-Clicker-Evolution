@@ -13,6 +13,6 @@ MonoBehaviour:
   m_Name: Slime_01
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
   enemyName: Slime
-  maxHealth: 2
-  goldReward: 10
+  maxHealth: 10
+  goldReward: 1
   enemySprite: {fileID: 7766275899223206993, guid: b471e3fa8e67213489370bc5923574ee, type: 3}
