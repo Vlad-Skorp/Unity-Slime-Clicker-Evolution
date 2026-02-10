@@ -1,6 +1,6 @@
 using System;
 
-namespace SlimeRpgEvolution2D.Logic
+namespace SlimeRpgEvolution2D.Core
 {
     public interface IDamageable
     {
@@ -8,5 +8,7 @@ namespace SlimeRpgEvolution2D.Logic
 
         void TakeDamage(int damage);
         bool IsDead { get; }
+
+        
     }
 }

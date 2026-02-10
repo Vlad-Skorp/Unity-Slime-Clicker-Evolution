@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace SlimeRpgEvolution2D.Data
 {
@@ -19,8 +20,23 @@ namespace SlimeRpgEvolution2D.Data
     [System.Serializable]
     public class GameSaveData
     {
-        public int coins;
+        [SerializeField] private int _coins;
+        public int Coins => _coins;
+        
         public string selectedCharacterID = "DefaultPlayer";
         public List<WeaponSaveData> weapons = new List<WeaponSaveData>();
+
+        public GameSaveData()
+        {
+            _coins = 0;
+            selectedCharacterID = "DefaultPlayer";
+            weapons = new List<WeaponSaveData>();
+        }
+
+        public void UpdateCoins(int amount, DataManager.AccessKey key)
+        {
+            if (key == null) return;
+            _coins = amount;
+        }
     }    
 }

@@ -1,7 +1,7 @@
-using UnityEngine;
-using System;
-using SlimeRpgEvolution2D.Logic;
 using SlimeRpgEvolution2D.Data;
+using SlimeRpgEvolution2D.Core;
+using System;
+using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
@@ -22,7 +22,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public static event Action<int> OnEnemyKilled;
     public static event Action OnDeathAnimationComplete;
-
 
     public void Initialize(EnemyConfig config)
     {
@@ -73,7 +72,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         _collider.enabled = false;
 
-        OnEnemyKilled?.Invoke(_config.goldReward);
+        GlobalEvents.SendMoneyEarned(_config.goldReward);
 
         _animator.ResetTrigger("Hit");
 

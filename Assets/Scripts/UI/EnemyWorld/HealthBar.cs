@@ -1,4 +1,4 @@
-using SlimeRpgEvolution2D.Logic;
+using SlimeRpgEvolution2D.Core;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;

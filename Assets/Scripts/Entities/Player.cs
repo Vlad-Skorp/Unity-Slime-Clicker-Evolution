@@ -1,20 +1,25 @@
 using System;
+using UnityEngine;
 using SlimeRpgEvolution2D.Core;
 using SlimeRpgEvolution2D.Data;
-using SlimeRpgEvolution2D.Logic;
-using UnityEngine;
+
 
 public class Player : MonoBehaviour
 {
     [Header("Configuration")]
     [SerializeField] private PlayerConfig _currentConfig;
 
-    public int Coins => DataManager.Instance.SaveData != null ? DataManager.Instance.SaveData.coins : 0;
+
+    public int Coins => (DataManager.Instance != null && DataManager.Instance.SaveData != null)
+    ? DataManager.Instance.SaveData.Coins
+    : 0;
     public int CurrentDamage => DataManager.Instance.GetCurrentDamage();
 
     public static event Action<int> OnCoinChanged;
     public static event Action OnStatsChanged;
     public static event Action OnAttackPerformed;
+
+    public static Player Instance { get; private set; }
 
     public void Start()
     {
@@ -45,6 +50,8 @@ public class Player : MonoBehaviour
     public void AddCoins(int amount)
     {
         DataManager.Instance.AddCoins(amount);
+
+        OnCoinChanged?.Invoke(this.Coins);
     }
 
 
@@ -57,13 +64,13 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        Enemy.OnEnemyKilled += AddCoins;
+        GlobalEvents.OnMoneyEarned += AddCoins;
         GlobalEvents.OnTargetCliked += PerformAttack;
     }
 
     private void OnDisable()
     {
-        Enemy.OnEnemyKilled -= AddCoins;
+        GlobalEvents.OnMoneyEarned -= AddCoins;
         GlobalEvents.OnTargetCliked -= PerformAttack;
     }
 }

@@ -14,13 +14,23 @@ public class DataManager : MonoBehaviour
 
     [Header("Configs")]
     [SerializeField] private List<PlayerConfig> allPlayerConfig;
+
+    [Header("Debug Settings")]
+    [SerializeField] private bool disabledSaving = false;
     
+
     public GameSaveData SaveData { get; private set; }
 
     public event Action OnDataLoaded;
 
     public static event Action<int> OnCoinsChanged;
     private string SavePath => Path.Combine(Application.persistentDataPath, fileName);
+
+
+
+
+    public class AccessKey { private AccessKey() { } internal static AccessKey Create() => new(); }
+    private AccessKey _token;
 
     private void Awake()
     {
@@ -33,12 +43,16 @@ public class DataManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
 
+        _token = AccessKey.Create();
+
         LoadGame();
     }
 
     [ContextMenu("Save Game")]
     public void SaveGame()
     {
+        if (disabledSaving) return;
+
         try
         {
             string json = JsonUtility.ToJson(SaveData, true);
@@ -54,38 +68,44 @@ public class DataManager : MonoBehaviour
     public void LoadGame()
     {
 
-        if (File.Exists(SavePath))
+        if (!File.Exists(SavePath))
         {
-            try
-            {
-                string json = File.ReadAllText(SavePath);
-                SaveData = JsonUtility.FromJson<GameSaveData>(json);
-                Debug.Log("[DataManager] Data loaded successfully.");
-
-                if (SaveData != null)
-                {
-                    Debug.Log("[DataManager] Загружено.");
-                    OnDataLoaded?.Invoke();
-                    return;
-                }
-            }
-
-            catch (Exception e)
-            {
-                Debug.LogError($"[DataManager] Load error: {e.Message}");
-            }
+            Debug.Log("[DataManager] Файл сохранения не найден. Создаем новый профиль.");
+            CreateNewProfile();
+            OnDataLoaded?.Invoke();
+            return;
         }
 
-        Debug.Log("[DataManager] Создаем новый профиль.");
-        CreateNewProfile();
+        try
+        {
+            string json = File.ReadAllText(SavePath);
+            SaveData = JsonUtility.FromJson<GameSaveData>(json);
+
+            if (SaveData == null)
+            {
+                Debug.LogError("[DataManager] Ошибка парсинга JSON. Создаем новый профиль.");
+                CreateNewProfile();
+            }
+            else 
+            {
+                Debug.Log("[DataManager] Данные успешно загружены.");
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogError($"[DataManager] Load error: {e.Message}");
+            CreateNewProfile();
+        }
+
+
         OnDataLoaded?.Invoke();
     }
 
     private void CreateNewProfile()
     {
-        SaveData = new GameSaveData { coins = 0 };
-        SaveData.coins = 0;
+        SaveData = new GameSaveData();
         SaveGame();
+        Debug.Log("[DataManager] Новый профиль успешно создан.");
     }
 
     public PlayerConfig GetCurrentPlayerConfig()
@@ -117,20 +137,50 @@ public class DataManager : MonoBehaviour
 
     public void AddCoins(int amount)
     {
-        if (SaveData == null) return;
+        if (SaveData == null || amount <= 0) return;
 
-        SaveData.coins += amount;
+        int newTotal = SaveData.Coins + amount;
+        SaveData.UpdateCoins(newTotal, _token);
 
-        OnCoinsChanged?.Invoke(SaveData.coins);
- 
+        OnCoinsChanged?.Invoke(SaveData.Coins);
+
     }
 
     public bool TrySpendCoins(int amount)
     {
-        if (SaveData == null || SaveData.coins < amount) return false;
+        if (SaveData == null || amount <= 0 || SaveData.Coins < amount) return false;
 
-        SaveData.coins -= amount;
-        OnCoinsChanged?.Invoke(SaveData.coins);
+        int newTotal = SaveData.Coins - amount;
+        SaveData.UpdateCoins(newTotal, _token);
+
+        OnCoinsChanged?.Invoke(SaveData.Coins);
+
+
         return true;
     }
+
+
+
+#if UNITY_EDITOR
+    [ContextMenu("Debug/Add 1000 Coins")]
+    public void DebugAddCoins()
+    {
+        if(!Application.isPlaying)
+        {
+            Debug.LogWarning("Крутить можно только в режиме Play!");
+            return;
+        }
+
+        AddCoins(1000);
+        Debug.Log("<color=yellow>Debug:</color> Добавлено 1000 монет");
+    }
+
+    [ContextMenu("Debug/Full Reset Data")]
+    public void ResetData()
+    {
+        if (File.Exists(SavePath)) File.Delete(SavePath);
+        CreateNewProfile();
+        Debug.Log("<color=red>Данные полностью удалены и сброшены!</color>");
+    }
+#endif
 }
