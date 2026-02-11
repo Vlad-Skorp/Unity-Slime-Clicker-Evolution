@@ -9,18 +9,18 @@ namespace SlimeRpgEvolution2D.UI.HUD
 
         private void OnEnable()
         {
-            Player.OnCoinChanged += HandleUpdate;
+            if (Player.Local != null)
+            {
+                Player.Local.OnCoinChanged += HandleUpdate;
+                HandleUpdate(Player.Local.Coins);
+            }
 
-            var activePlayer = Object.FindFirstObjectByType<Player>();
-
-            if (activePlayer != null) HandleUpdate(activePlayer.Coins);
-            
         }
 
 
         private void OnDisable()
         {
-            Player.OnCoinChanged -= HandleUpdate;
+            if (Player.Local != null) Player.Local.OnCoinChanged -= HandleUpdate;
         }
 
         private void HandleUpdate(int amount)

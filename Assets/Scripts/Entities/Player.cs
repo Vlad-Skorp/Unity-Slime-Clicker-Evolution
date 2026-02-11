@@ -9,17 +9,21 @@ public class Player : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private PlayerConfig _currentConfig;
 
+    public static Player Local;
 
     public int Coins => (DataManager.Instance != null && DataManager.Instance.SaveData != null)
     ? DataManager.Instance.SaveData.Coins
     : 0;
     public int CurrentDamage => DataManager.Instance.GetCurrentDamage();
 
-    public static event Action<int> OnCoinChanged;
+    public event Action<int> OnCoinChanged;
     public static event Action OnStatsChanged;
     public static event Action OnAttackPerformed;
 
-    public static Player Instance { get; private set; }
+    void Awake()
+    {
+        Local = this;
+    }
 
     public void Start()
     {

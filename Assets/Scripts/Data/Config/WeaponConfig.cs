@@ -3,12 +3,16 @@ using UnityEngine;
 namespace SlimeRpgEvolution2D.Data
 {
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "Config/Entities/WeaponConfig")]
-    public class WeaponConfig : ScriptableObject
+    public class WeaponConfig : ScriptableObject, IIdentifiable<string>
     {
         public string weaponID;
-        public string dispalyName;
+
+        public string ID => weaponID;
+
+        public string displayName;
         public int baseDamageBonus;
         public int basePurchasePrice;
+        public Sprite weaponSprite;
 
         [Header("Progression Setings")]
         [Tooltip("Коэффицент роста за прокачку")]

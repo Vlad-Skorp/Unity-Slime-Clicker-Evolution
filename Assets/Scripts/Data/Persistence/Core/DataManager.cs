@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using UnityEngine;
 using System.Collections.Generic;
-
+using System.Linq;
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
@@ -13,7 +13,11 @@ public class DataManager : MonoBehaviour
     [SerializeField] private bool useEncryption = false;
 
     [Header("Configs")]
-    [SerializeField] private List<PlayerConfig> allPlayerConfig;
+    // [SerializeField] private List<PlayerConfig> allPlayerConfig; 
+    //Если добавлю Классы или Рассы и другие аккаунты, а лучше создай отдельно PlayerDatabase
+    [SerializeField] private PlayerConfig _playerConfig;
+
+
 
     [Header("Debug Settings")]
     [SerializeField] private bool disabledSaving = false;
@@ -110,25 +114,21 @@ public class DataManager : MonoBehaviour
 
     public PlayerConfig GetCurrentPlayerConfig()
     {
-        if (SaveData == null || allPlayerConfig == null || allPlayerConfig.Count == 0)
+        if (SaveData == null || _playerConfig == null)
         {
             Debug.LogError("[DataManager] Нет данных или список конфигов пуст!");
             return null;
         }
 
-        PlayerConfig config = allPlayerConfig.Find(c => c.CharacterID == SaveData.selectedCharacterID);
-
-        return config ?? allPlayerConfig[0];
+        return _playerConfig;
     }
 
     public int GetCurrentDamage()
     {
-        PlayerConfig currentConfig = GetCurrentPlayerConfig();
+        if (_playerConfig == null) return 0;
+        if (SaveData == null) return _playerConfig.BaseDamage;
 
-        if (currentConfig == null) return 0;
-        if (SaveData == null) return currentConfig.BaseDamage;
-
-        return currentConfig.CalculateTotalDamage(SaveData);
+        return  _playerConfig.CalculateTotalDamage(SaveData);
     }
 
     private void OnApplicationPause(bool pauseStaus){ if(pauseStaus) SaveGame(); }
@@ -159,6 +159,33 @@ public class DataManager : MonoBehaviour
         return true;
     }
 
+
+    public int GetWeaponLevel(string id)
+    {
+        var weapon = SaveData.Weapons.FirstOrDefault(w => w.weaponID == id);
+        return weapon.weaponID != null ? weapon.currentLevel : 0;
+
+    }
+
+    public void SetWeaponLevel(string id, int level)
+    {
+        List<WeaponSaveData> newWeapons = new List<WeaponSaveData>(SaveData.Weapons);
+
+        var weaponIndex = newWeapons.FindIndex(w => w.weaponID == id);
+
+        if (weaponIndex != -1)
+        {
+            var updatedWeapon = newWeapons[weaponIndex];
+            updatedWeapon.currentLevel = level;
+            newWeapons[weaponIndex] = updatedWeapon;
+        }
+        else
+        {
+            newWeapons.Add(new WeaponSaveData(id, level));
+        }
+
+        SaveData.UpdateWeapons(newWeapons, _token);
+    }
 
 
 #if UNITY_EDITOR

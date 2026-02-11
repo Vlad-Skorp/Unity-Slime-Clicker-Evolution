@@ -1,11 +1,12 @@
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections.Generic;
+
 
 namespace SlimeRpgEvolution2D.Data
 {
 
     [System.Serializable]
-    public class WeaponSaveData
+    public struct WeaponSaveData
     {
         public string weaponID;
         public int currentLevel;
@@ -22,21 +23,29 @@ namespace SlimeRpgEvolution2D.Data
     {
         [SerializeField] private int _coins;
         public int Coins => _coins;
-        
+
+        [SerializeField] private List<WeaponSaveData> _weapons = new List<WeaponSaveData>();
+        public IReadOnlyList<WeaponSaveData> Weapons => _weapons;
+
         public string selectedCharacterID = "DefaultPlayer";
-        public List<WeaponSaveData> weapons = new List<WeaponSaveData>();
 
         public GameSaveData()
         {
             _coins = 0;
             selectedCharacterID = "DefaultPlayer";
-            weapons = new List<WeaponSaveData>();
+            _weapons = new List<WeaponSaveData>();
         }
 
         public void UpdateCoins(int amount, DataManager.AccessKey key)
         {
             if (key == null) return;
             _coins = amount;
+        }
+
+        public void UpdateWeapons(List<WeaponSaveData> weaponList, DataManager.AccessKey key)
+        {
+            if (key == null) return;
+            _weapons = weaponList;
         }
     }    
 }

@@ -22,16 +22,15 @@ namespace SlimeRpgEvolution2D.Data
 
         public int CalculateTotalDamage(GameSaveData saveData)
         {
-            if (saveData == null) return _baseDamage;
+            if (saveData == null || saveData.Weapons == null || GameDB.Weapons == null)
+                return _baseDamage;
 
-            int weaponDamage = saveData.weapons?.Sum(savedWeapon =>
+            int weaponDamage = saveData.Weapons.Sum(savedWeapon =>
             {
-                if (savedWeapon == null) return 0;
+                var config = GameDB.Weapons.GetByID(savedWeapon.weaponID);
 
-                var config = allWeapons.Find(w => w.weaponID == savedWeapon.weaponID);
-                return config != null ? config.GetDamageAtLevel(savedWeapon.currentLevel) : 0;
-
-            }) ?? 0;
+                return (config != null) ? config.GetDamageAtLevel(savedWeapon.currentLevel) : 0;;
+            });
 
             return _baseDamage + weaponDamage;
         }
