@@ -9,15 +9,17 @@ namespace SlimeRpgEvolution2D.UI.Popups
     {
         [SerializeField] private Image _icon;
         [SerializeField] private TextMeshProUGUI _nameText;
+        [SerializeField] private TextMeshProUGUI _lvlText;
         [SerializeField] private TextMeshProUGUI _priceText;
         [SerializeField] private Button _buyButton;
         [SerializeField] private CanvasGroup _group;
 
 
-        public void SetData(Sprite icon, string name, string price, Color priceColor)
+        public void SetData(Sprite icon, string name, string level, string price, Color priceColor)
         {
             _icon.sprite = icon;
             _nameText.text = name;
+            _lvlText.text = level;
             _priceText.text = price;
             _priceText.color = priceColor;
         }

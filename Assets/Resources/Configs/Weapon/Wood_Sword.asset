@@ -16,6 +16,6 @@ MonoBehaviour:
   displayName: Wood Sword
   baseDamageBonus: 2
   basePurchasePrice: 50
-  weaponSprite: {fileID: 0}
+  weaponSprite: {fileID: 8043274422926381726, guid: 9fbb01b0f19129e4fa79c050265a62d5, type: 3}
   damageMultiplier: 1.5
   priceMultiplier: 2

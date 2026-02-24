@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace SlimeRpgEvolution2D.UI.HUD
 {
-    public class CoinsPresenter : MonoBehaviour
+    public class DamagePresenter : MonoBehaviour
     {
         [Header("UI Components")]
         [SerializeField] private CounterView _view;
@@ -11,16 +11,14 @@ namespace SlimeRpgEvolution2D.UI.HUD
         {
             if (Player.Local != null)
             {
-                Player.Local.OnCoinChanged += HandleUpdate;
-                HandleUpdate(Player.Local.Coins);
+                Player.Local.OnDamageChanged += HandleUpdate;
+                HandleUpdate(Player.Local.CurrentDamage);
             }
-
         }
-
 
         private void OnDisable()
         {
-            if (Player.Local != null) Player.Local.OnCoinChanged -= HandleUpdate;
+            if (Player.Local != null) Player.Local.OnDamageChanged -= HandleUpdate;
         }
 
         private void HandleUpdate(int amount)

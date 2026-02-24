@@ -12,6 +12,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 89e78187dba44484497d4f7c16ee9f86, type: 3}
   m_Name: WeaponDatabase
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.WeaponDatabase
-  _allWeapons:
+  _allEntries:
   - {fileID: 11400000, guid: 9c2f89331a87a384688c4a06b0d0c6c8, type: 2}
   - {fileID: 11400000, guid: 51bd447a7ba4b664f80b1c26d5568970, type: 2}

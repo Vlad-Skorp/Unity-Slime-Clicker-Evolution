@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 0c6b2f8be0c2bf64892e7b48ab1bf107
+guid: 85ecb4f986766114da7e9449af964096
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: -4408744087201691700
-    second: Coin_1_0
+      213: -5215486796406550636
+    second: Slime_Green_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -48,7 +48,7 @@ TextureImporter:
   compressionQuality: 50
   spriteMode: 2
   spriteExtrude: 1
-  spriteMeshType: 0
+  spriteMeshType: 1
   alignment: 0
   spritePivot: {x: 0.5, y: 0.5}
   spritePixelsToUnits: 100
@@ -126,23 +126,23 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Coin_1
+      name: Slime_Green_0
       rect:
         serializedVersion: 2
-        x: 3
-        y: 0
-        width: 24
-        height: 32
+        x: 16
+        y: 22
+        width: 31
+        height: 20
       alignment: 0
-      pivot: {x: 0.5, y: 0.5}
+      pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: cc74db87c9ef0d2c0800000000000000
-      internalID: -4408744087201691700
+      spriteID: 49f8279346ede97b0800000000000000
+      internalID: -5215486796406550636
       vertices: []
       indices: 
       edges: []
@@ -151,8 +151,8 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 2228cfdbc4b6fc64994fa3bf07b651b5
-    internalID: 252404555
+    spriteID: 
+    internalID: 0
     vertices: []
     indices: 
     edges: []
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Coin_1: -4408744087201691700
+      Slime_Green_0: -5215486796406550636
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

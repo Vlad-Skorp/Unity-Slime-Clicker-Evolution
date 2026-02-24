@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     public int CurrentDamage => DataManager.Instance.GetCurrentDamage();
 
     public event Action<int> OnCoinChanged;
+    public event Action<int> OnDamageChanged;
+
     public static event Action OnStatsChanged;
     public static event Action OnAttackPerformed;
 
@@ -58,10 +60,16 @@ public class Player : MonoBehaviour
         OnCoinChanged?.Invoke(this.Coins);
     }
 
+    public void RefreshDamage()
+    {
+        OnDamageChanged?.Invoke(CurrentDamage);
+    }
+
 
     public void RefreshUI()
     {
         OnCoinChanged?.Invoke(Coins);
+        OnDamageChanged?.Invoke(CurrentDamage);
         OnStatsChanged?.Invoke();
     }
 

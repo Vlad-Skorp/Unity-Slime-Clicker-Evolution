@@ -4,11 +4,11 @@ using UnityEngine;
 
 namespace SlimeRpgEvolution2D.UI.HUD
 {
-    public class CoinView : MonoBehaviour
+    public class CounterView : MonoBehaviour
     {
         [SerializeReference] private TextMeshProUGUI _text;
 
-        public void SetCoin(int value)
+        public void SetValue(int value)
         {
             _text.text = value.ToString();
         }

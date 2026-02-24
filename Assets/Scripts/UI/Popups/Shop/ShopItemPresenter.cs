@@ -34,8 +34,9 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
             _view.SetData(
                 _config.weaponSprite,
-                $"{_config.displayName} Lvl.{level}",
-                $"{price} <sprite name=\"coin\">",
+                _config.displayName,
+                $"Lvl.{level}",
+                $"{price} <sprite name=\"Coin_1\">",
                 canAfford ? _affordableColor : _tooExpensiveColor
             );
 

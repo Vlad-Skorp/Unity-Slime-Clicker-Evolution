@@ -16,6 +16,6 @@ MonoBehaviour:
   backgroundSprite: {fileID: 3398196857506778724, guid: b062c12fd18e50143990b47d893e03cd, type: 3}
   availableEnemies:
   - enemyConfig: {fileID: 11400000, guid: 09f1e9889f9f309408721f99bc9907c4, type: 2}
-    spawnWight: 1
+    spawnWight: 25
   chancePreview:
   - 'Slime_01: 100,0%'
