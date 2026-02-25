@@ -18,4 +18,4 @@ MonoBehaviour:
   basePurchasePrice: 10
   weaponSprite: {fileID: -7907951331658488048, guid: 29448ef81184b0c46ad0e8e3f36f4a9d, type: 3}
   damageMultiplier: 1.2
-  priceMultiplier: 1.5
+  priceMultiplier: 1.2

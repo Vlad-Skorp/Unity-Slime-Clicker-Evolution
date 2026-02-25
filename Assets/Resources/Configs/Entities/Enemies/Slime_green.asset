@@ -14,5 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
   enemyName: Grenn
   maxHealth: 50
-  goldReward: 2
+  goldReward: 5
   enemySprite: {fileID: -5215486796406550636, guid: 85ecb4f986766114da7e9449af964096, type: 3}
