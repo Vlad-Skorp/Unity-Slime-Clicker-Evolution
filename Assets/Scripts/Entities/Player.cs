@@ -9,6 +9,10 @@ public class Player : MonoBehaviour
     [Header("Configuration")]
     [SerializeField] private PlayerConfig _currentConfig;
 
+    [Header("Audio")]
+    [SerializeField] private AudioSource _audioSource; 
+    [SerializeField] private AudioClip _attackSound;
+
     public static Player Local;
 
     public int Coins => (DataManager.Instance != null && DataManager.Instance.SaveData != null)
@@ -49,6 +53,13 @@ public class Player : MonoBehaviour
         if (target != null && !target.IsDead)
         {
             target.TakeDamage(CurrentDamage);
+
+            if (_attackSound != null && _audioSource != null)
+            {
+                _audioSource.pitch = UnityEngine.Random.Range(0.9f, 1.1f);
+                _audioSource.PlayOneShot(_attackSound);
+            }
+
             OnAttackPerformed?.Invoke();
         }
     }

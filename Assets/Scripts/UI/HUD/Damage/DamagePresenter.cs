@@ -1,29 +1,18 @@
+using DG.Tweening;
 using UnityEngine;
 
 namespace SlimeRpgEvolution2D.UI.HUD
 {
-    public class DamagePresenter : MonoBehaviour
+    public class DamagePresenter : BasePresenter
     {
-        [Header("UI Components")]
-        [SerializeField] private CounterView _view;
+        protected override void Subscribe() => Player.Local.OnDamageChanged += HandleUpdate;
+        protected override void Unsubscribe() => Player.Local.OnDamageChanged -= HandleUpdate;
+        protected override int GetCurrentValue() => Player.Local.CurrentDamage;
 
-        private void OnEnable()
-        {
-            if (Player.Local != null)
-            {
-                Player.Local.OnDamageChanged += HandleUpdate;
-                HandleUpdate(Player.Local.CurrentDamage);
-            }
-        }
 
-        private void OnDisable()
+        protected override void HandleUpdate(int amount)
         {
-            if (Player.Local != null) Player.Local.OnDamageChanged -= HandleUpdate;
-        }
-
-        private void HandleUpdate(int amount)
-        {
-            _view.SetValue(amount);
+            base.HandleUpdate(amount); 
         }
     }
 }
