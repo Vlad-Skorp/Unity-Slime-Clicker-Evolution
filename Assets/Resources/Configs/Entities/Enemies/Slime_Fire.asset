@@ -13,6 +13,20 @@ MonoBehaviour:
   m_Name: Slime_Fire
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
   enemyName: Fire_Slime
-  maxHealth: 250
-  goldReward: 25
-  enemySprite: {fileID: -1821679629681330496, guid: 571dcaa59fdc1bc4680a11a05d50b98c, type: 3}
+  maxHealth: 10
+  goldReward: 1
+  enemySprite: {fileID: -3271797694918516673, guid: ed75d1e3ba7eed549be1114a24c827e1, type: 3}
+  droppedLootPrefab: {fileID: 2350217537594031356, guid: 8a935c9cbb9e0e44aa5c88e28311fa76, type: 3}
+  goldCoinSprite: {fileID: -4408744087201691700, guid: 0c6b2f8be0c2bf64892e7b48ab1bf107, type: 3}
+  availableLoot:
+  - itemConfig: {fileID: 11400000, guid: 33590e92e32a24646b91bf1ec9182d3e, type: 2}
+    dropAmount: 1
+    dropWeight: 100
+  - itemConfig: {fileID: 0}
+    dropAmount: 0
+    dropWeight: 5
+  lootChancePreview:
+  - "\u041E\u0433\u043D\u0435\u043D\u043E\u0435 \u044F\u0434\u0440\u043E (\u04451):
+    95,2%"
+  - "\u041D\u0418\u0427\u0415\u0413\u041E (\u041F\u0443\u0441\u0442\u044B\u0448\u043A\u0430):
+    4,8%"

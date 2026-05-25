@@ -1,10 +1,10 @@
 fileFormatVersion: 2
-guid: 9fbb01b0f19129e4fa79c050265a62d5
+guid: 29448ef81184b0c46ad0e8e3f36f4a9d
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 8043274422926381726
-    second: Wood_Sword_0
+      213: -7907951331658488048
+    second: Stick_0
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -75,7 +75,7 @@ TextureImporter:
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
-    textureCompression: 1
+    textureCompression: 0
     compressionQuality: 50
     crunchedCompression: 0
     allowsAlphaSplitting: 0
@@ -126,7 +126,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Wood_Sword_0
+      name: Stick_0
       rect:
         serializedVersion: 2
         x: 0
@@ -141,8 +141,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: -1
       bones: []
-      spriteID: e921389f8737f9f60800000000000000
-      internalID: 8043274422926381726
+      spriteID: 0172b677920514290800000000000000
+      internalID: -7907951331658488048
       vertices: []
       indices: 
       edges: []
@@ -151,7 +151,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 84a5756918e2b10488116298d659005c
+    spriteID: 1fc789238cda26b4290dedeea41a9625
     internalID: 0
     vertices: []
     indices: 
@@ -161,7 +161,7 @@ TextureImporter:
     spriteCustomMetadata:
       entries: []
     nameFileIdTable:
-      Wood_Sword_0: 8043274422926381726
+      Stick_0: -7907951331658488048
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

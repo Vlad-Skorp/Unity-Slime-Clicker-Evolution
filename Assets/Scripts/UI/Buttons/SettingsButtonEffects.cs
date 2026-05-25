@@ -36,6 +36,10 @@ namespace SlimeRpgEvolution2D.UI.Buttons
         // Срабатывает при КЛИКЕ
         public void OnPointerClick(PointerEventData eventData)
         {
+            transform.DOKill(complete: true);
+
+            transform.localScale = Vector3.one;
+
             // Небольшой "пульс" при нажатии
             transform.DOPunchScale(Vector3.one * _punchStrength, 0.2f);
         }

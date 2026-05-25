@@ -16,15 +16,15 @@ MonoBehaviour:
   backgroundSprite: {fileID: 3398196857506778724, guid: b062c12fd18e50143990b47d893e03cd, type: 3}
   availableEnemies:
   - enemyConfig: {fileID: 11400000, guid: 09f1e9889f9f309408721f99bc9907c4, type: 2}
-    spawnWight: 27
+    spawnWight: 1
   - enemyConfig: {fileID: 11400000, guid: c87f9419fab242a4e9d5706b52689990, type: 2}
-    spawnWight: 8
+    spawnWight: 1
   - enemyConfig: {fileID: 11400000, guid: 36055e54da314dc4e96acc6f2bddb881, type: 2}
-    spawnWight: 3.1
+    spawnWight: 1
   - enemyConfig: {fileID: 11400000, guid: ebded1cf6755e0040886d2f9a643380c, type: 2}
-    spawnWight: 0.8
+    spawnWight: 1
   chancePreview:
-  - 'Slime_01: 69,4%'
-  - 'Slime_green: 20,6%'
-  - 'Slime_Fire: 8,0%'
-  - 'Cosmic_Slime: 2,1%'
+  - 'Slime_01: 25,0%'
+  - 'Slime_green: 25,0%'
+  - 'Slime_Fire: 25,0%'
+  - 'Cosmic_Slime: 25,0%'

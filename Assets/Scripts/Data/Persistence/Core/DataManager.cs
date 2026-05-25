@@ -187,6 +187,46 @@ public class DataManager : MonoBehaviour
         SaveData.UpdateWeapons(newWeapons, _token);
     }
 
+    public void UnlockInventory()
+    {
+        if (SaveData == null) return;
+
+        // Передаем приватный токен _token, который сгенерирован в Awake
+        SaveData.UpdateInventoryUnlockStatus(true, _token);
+
+        // Сохраняем игру, чтобы статус записался в JSON-файл
+        SaveGame();
+
+        Debug.Log("<color=green>[DataManager]</color> Инвентарь успешно разблокирован!");
+    }
+
+
+
+    public void AddItemToSave(string id, int amount = 1)
+    {
+        if (SaveData == null || string.IsNullOrEmpty(id) || amount <= 0) return;
+
+        List<InventoryItemSaveData> newItems = new List<InventoryItemSaveData>(SaveData.InventoryItems);
+
+        int itemIndex = newItems.FindIndex(item => item.itemID == id);
+
+        if (itemIndex != -1)
+        {
+            var updatedItem = newItems[itemIndex];
+            updatedItem.amount += amount;
+            newItems[itemIndex] = updatedItem;
+        }
+        else
+        {
+            newItems.Add(new InventoryItemSaveData(id, amount));
+        }
+
+
+        SaveData.UpdateInventory(newItems, _token);
+
+        SaveGame();
+    }
+
 
 #if UNITY_EDITOR
     [ContextMenu("Debug/Add 1000 Coins")]

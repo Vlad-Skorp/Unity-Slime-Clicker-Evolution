@@ -11,7 +11,6 @@ namespace SlimeRpgEvolution2D.UI.Popups
         private WeaponConfig _config;
         public WeaponConfig Config => _config;
 
-
         [Header("Settings")]
         [SerializeField] private Color _affordableColor = Color.white;
         [SerializeField] private Color _tooExpensiveColor = Color.red;

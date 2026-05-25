@@ -23,6 +23,15 @@ TextureImporter:
   - first:
       213: -7780354086229382485
     second: Shop_6
+  - first:
+      213: -3065389236859672827
+    second: Shop_7
+  - first:
+      213: 499935684823186808
+    second: Shop_8
+  - first:
+      213: -2267746862131151629
+    second: Shop_9
   externalObjects: {}
   serializedVersion: 13
   mipmaps:
@@ -58,9 +67,9 @@ TextureImporter:
     filterMode: 0
     aniso: 1
     mipBias: 0
-    wrapU: 0
-    wrapV: 0
-    wrapW: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
   nPOTScale: 0
   lightmap: 0
   compressionQuality: 50
@@ -188,101 +197,13 @@ TextureImporter:
       edges: []
       weights: []
     - serializedVersion: 2
-      name: Shop_2
+      name: Shop_6
       rect:
         serializedVersion: 2
         x: 180
         y: 52
         width: 128
         height: 256
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 0b4b7564e8d029a70800000000000000
-      internalID: 8832136723943634096
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shop_3
-      rect:
-        serializedVersion: 2
-        x: 7
-        y: 228
-        width: 111
-        height: 38
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: c0d897a3b23ded8c0800000000000000
-      internalID: -3972505638676099828
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shop_4
-      rect:
-        serializedVersion: 2
-        x: 136
-        y: 233
-        width: 28
-        height: 28
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: 4df10dbc636474350800000000000000
-      internalID: 6000842229656068052
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shop_5
-      rect:
-        serializedVersion: 2
-        x: 10
-        y: 192
-        width: 70
-        height: 24
-      alignment: 0
-      pivot: {x: 0.5, y: 0.5}
-      border: {x: 0, y: 0, z: 0, w: 0}
-      customData: 
-      outline: []
-      physicsShape: []
-      tessellationDetail: -1
-      bones: []
-      spriteID: aedf52d33d1dcd3f0800000000000000
-      internalID: -874593522422514198
-      vertices: []
-      indices: 
-      edges: []
-      weights: []
-    - serializedVersion: 2
-      name: Shop_6
-      rect:
-        serializedVersion: 2
-        x: 88
-        y: 192
-        width: 70
-        height: 24
       alignment: 0
       pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -302,6 +223,116 @@ TextureImporter:
       rect:
         serializedVersion: 2
         x: 7
+        y: 228
+        width: 111
+        height: 38
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5076caeeabc8575d0800000000000000
+      internalID: -3065389236859672827
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shop_8
+      rect:
+        serializedVersion: 2
+        x: 136
+        y: 233
+        width: 28
+        height: 28
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 87d7d684bd020f600800000000000000
+      internalID: 499935684823186808
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shop_9
+      rect:
+        serializedVersion: 2
+        x: 10
+        y: 192
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3fc7a227e385780e0800000000000000
+      internalID: -2267746862131151629
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shop_2
+      rect:
+        serializedVersion: 2
+        x: 102
+        y: 291
+        width: 37
+        height: 13
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: d14003ef0fad6e84c93ef1a6418acfd8
+      internalID: 8832136723943634096
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shop_10
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 192
+        width: 70
+        height: 24
+      alignment: 0
+      pivot: {x: 0.5, y: 0.5}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: 0
+      bones: []
+      spriteID: 8b027618e5b7ac641b324e9b2e8f37c2
+      internalID: -848832623
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: Shop_11
+      rect:
+        serializedVersion: 2
+        x: 7
         y: 140
         width: 110
         height: 38
@@ -313,8 +344,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6134d629c2db3d845814ae406ea6c01f
-      internalID: -1002050139
+      spriteID: 0de4b08e5c828384a904250dc6864e22
+      internalID: -1040874717
       vertices: []
       indices: 
       edges: []
@@ -323,7 +354,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 6b7b91ad5cdedd34b976c22a91b408b7
+    spriteID: 3f0b9dc5a621a2245af8b1a40435a157
     internalID: 0
     vertices: []
     indices: 
@@ -337,12 +368,16 @@ TextureImporter:
     nameFileIdTable:
       Shop_0: -1151905075149521417
       Shop_1: 173225325691430865
+      Shop_10: -848832623
+      Shop_11: -1040874717
       Shop_2: 8832136723943634096
       Shop_3: -3972505638676099828
       Shop_4: 6000842229656068052
       Shop_5: -874593522422514198
       Shop_6: -7780354086229382485
-      Shop_7: -1002050139
+      Shop_7: -3065389236859672827
+      Shop_8: 499935684823186808
+      Shop_9: -2267746862131151629
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

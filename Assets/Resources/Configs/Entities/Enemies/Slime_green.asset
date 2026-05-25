@@ -13,6 +13,20 @@ MonoBehaviour:
   m_Name: Slime_green
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
   enemyName: Grenn
-  maxHealth: 50
-  goldReward: 5
-  enemySprite: {fileID: -5215486796406550636, guid: 85ecb4f986766114da7e9449af964096, type: 3}
+  maxHealth: 10
+  goldReward: 1
+  enemySprite: {fileID: -8061047835956459339, guid: 92b0aec7c7bb96740a8ce0dcc599ed31, type: 3}
+  droppedLootPrefab: {fileID: 2350217537594031356, guid: 8a935c9cbb9e0e44aa5c88e28311fa76, type: 3}
+  goldCoinSprite: {fileID: -4408744087201691700, guid: 0c6b2f8be0c2bf64892e7b48ab1bf107, type: 3}
+  availableLoot:
+  - itemConfig: {fileID: 11400000, guid: 0ce88131e60eef3429e40dd7c8d3d479, type: 2}
+    dropAmount: 1
+    dropWeight: 100
+  - itemConfig: {fileID: 0}
+    dropAmount: 0
+    dropWeight: 5
+  lootChancePreview:
+  - "\u041B\u0438\u0441\u0442\u0432\u0435\u043D\u043D\u043E\u0435 \u044F\u0434\u0440\u043E
+    (\u04451): 95,2%"
+  - "\u041D\u0418\u0427\u0415\u0413\u041E (\u041F\u0443\u0441\u0442\u044B\u0448\u043A\u0430):
+    4,8%"

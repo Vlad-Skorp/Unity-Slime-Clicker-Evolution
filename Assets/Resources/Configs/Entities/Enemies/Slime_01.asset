@@ -16,3 +16,7 @@ MonoBehaviour:
   maxHealth: 10
   goldReward: 1
   enemySprite: {fileID: 7766275899223206993, guid: b471e3fa8e67213489370bc5923574ee, type: 3}
+  droppedLootPrefab: {fileID: 2350217537594031356, guid: 8a935c9cbb9e0e44aa5c88e28311fa76, type: 3}
+  goldCoinSprite: {fileID: -4408744087201691700, guid: 0c6b2f8be0c2bf64892e7b48ab1bf107, type: 3}
+  availableLoot: []
+  lootChancePreview: []

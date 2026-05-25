@@ -8,7 +8,11 @@ using SlimeRpgEvolution2D.UI.Core;
 
 namespace SlimeRpgEvolution2D.UI.Popups
 {
-
+    public enum ShopTabType
+    {
+        Weapons,
+        Inventory
+    }
 
     public class ShopManager : MonoBehaviour
     {
@@ -16,8 +20,10 @@ namespace SlimeRpgEvolution2D.UI.Popups
         [SerializeField] private ShopItemPresenter _itemPrefab;
         [SerializeField] private Transform _container;
 
-        private readonly List<ShopItemPresenter> _activeItems = new List<ShopItemPresenter>();
+        [SerializeField] private List<ShopTabButton> _tabButtons;
 
+        private readonly List<ShopItemPresenter> _activeItems = new List<ShopItemPresenter>();
+        private ShopTabType _currentTab = ShopTabType.Weapons; //¬кладка по умолчанию
 
         [Header("Animations")]
         [SerializeField] private CanvasGroup _canvasGroup;
@@ -36,6 +42,19 @@ namespace SlimeRpgEvolution2D.UI.Popups
             }
 
             DataManager.OnCoinsChanged += RefreshAllItems;
+
+            SelectTab(ShopTabType.Weapons);
+        }
+
+        public void SelectTab(ShopTabType tabType)
+        {
+            _currentTab = tabType;
+
+            foreach(var button in _tabButtons)
+            {
+                if (button != null) button.UpdateVisualState(_currentTab);
+            }
+
             InitializeShop();
         }
 
@@ -45,25 +64,58 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
             foreach (var item in _activeItems)
             {
-                item.UpgradeRequested -= HandleUpgradeRequest;
-                Destroy(item.gameObject);
+                if (item != null)
+                {
+                    item.UpgradeRequested -= HandleUpgradeRequest;
+                    Destroy(item.gameObject);
+                }
             }
             _activeItems.Clear();
 
-            foreach(var config in GameDB.Weapons.AllEntries)
+            if (_currentTab == ShopTabType.Weapons)
             {
-                var itemUI = Instantiate(_itemPrefab, _container);
-
-                int currentLvl = DataManager.Instance.GetWeaponLevel(config.weaponID);
-                bool canAfford = DataManager.Instance.SaveData.Coins >= config.GetUpgradePrice(currentLvl);
-
-                itemUI.Initialize(config, currentLvl, canAfford);
-                itemUI.UpgradeRequested += HandleUpgradeRequest; 
-
-                _activeItems.Add(itemUI);
-
+                foreach (var config in GameDB.Weapons.AllEntries)
+                {
+                    if (config == null) continue;
+                    CreateWeaponItem(config);
+                }
+            }
+            else if (_currentTab == ShopTabType.Inventory)
+            {
+                foreach (var config in GameDB.Tools.AllEntries)
+                {
+                    if (config == null) continue;
+                    CreateToolItem(config);
+                }
             }
         }
+
+        private void CreateWeaponItem(WeaponConfig config)
+        {
+            var itemUI = Instantiate(_itemPrefab, _container);
+
+            int currentLvl = DataManager.Instance.GetWeaponLevel(config.weaponID);
+            bool canAfford = DataManager.Instance.SaveData.Coins >= config.GetUpgradePrice(currentLvl);
+
+            itemUI.Initialize(config, currentLvl, canAfford);
+            itemUI.UpgradeRequested += HandleUpgradeRequest;
+
+            _activeItems.Add(itemUI);
+        }
+
+        private void CreateToolItem(ToolConfig config)
+        {
+            var itemUI = Instantiate(_itemPrefab, _container);
+
+            bool isOwned = false;
+            if (config.itemID == "backpac_01")
+            {
+                isOwned = DataManager.Instance.SaveData.IsInventoryUnlocked;
+            }
+
+            bool canAfford = DataManager.Instance.SaveData.Coins >= config.basePurchasePrice;
+        }
+
 
         private void HandleUpgradeRequest(WeaponConfig config)
         {

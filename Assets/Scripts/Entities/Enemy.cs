@@ -1,5 +1,6 @@
-using SlimeRpgEvolution2D.Data;
 using SlimeRpgEvolution2D.Core;
+using SlimeRpgEvolution2D.Data;
+using SlimeRpgEvolution2D.Logic.Effects;
 using System;
 using UnityEngine;
 
@@ -74,8 +75,43 @@ public class Enemy : MonoBehaviour, IDamageable
 
         GlobalEvents.SendMoneyEarned(_config.goldReward);
 
-        _animator.ResetTrigger("Hit");
+        // 2. РАСЧЕТ ДРОПА ПРЕДМЕТОВ МАТЕМАТИЧЕСКИ
+        EnemyDropResult dropResult = _config.RollRandomDrop();
 
+        if (dropResult.itemConfig != null)
+        {
+            ItemConfig droppedItem = dropResult.itemConfig;
+            int amountToGive = dropResult.amount;
+
+            Debug.Log($"<color=green>[ДРОП ВЫПАЛ!]</color> Из слизня выпал предмет: <b>{droppedItem.displayName}</b> (ID: {droppedItem.itemID}) в количестве <b>х{amountToGive}</b>");
+
+            // --- ОТПРАВКА В ИНВЕНТАРЬ ---
+            if (DataManager.Instance != null)
+            {
+                DataManager.Instance.AddItemToSave(droppedItem.itemID, amountToGive);
+            }
+            else
+            {
+                Debug.LogError("[Enemy] DataManager.Instance не найден! Предмет не сохранен в инвентарь.");
+            }
+        }
+        else
+        {
+            Debug.Log("<color=gray>[Дроп]</color> Из слизня ничего не выпало (выпал сектор 'Ничего').");
+        }
+
+
+        if (LootSpawner.Instance != null)
+        {
+            LootSpawner.Instance.SpawnLootEffects(_config, transform.position, dropResult);
+        }
+        else
+        {
+            Debug.LogWarning("[Enemy] LootSpawner.Instance на сцене не найден! Эффекты не будут заспавнены.");
+        }
+
+
+        _animator.ResetTrigger("Hit");
         _animator.SetBool("IsDead", true);
         _animator.SetTrigger("Die");
     }

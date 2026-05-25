@@ -6,13 +6,19 @@ namespace SlimeRpgEvolution2D.Data
     public class WeaponConfig : ScriptableObject, IIdentifiable<string>
     {
         public string weaponID;
-
         public string ID => weaponID;
 
+
         public string displayName;
+        public string DisplayName => displayName;
+
         public int baseDamageBonus;
         public int basePurchasePrice;
+
+
         public Sprite weaponSprite;
+        public Sprite Icon => weaponSprite;
+
 
         [Header("Progression Setings")]
         [Tooltip("Коэффицент роста за прокачку")]
