@@ -8,10 +8,11 @@ public class GameInitializer : MonoBehaviour
     [SerializeField] private ItemDatabase _itemDb;
     [SerializeField] private ToolDatabase _toolDb;
 
+    [SerializeField] private ShopDatabase _shopDb;
     void Awake()
     {
         // Вот здесь магия оживает:
-        GameDB.Initialize(_weaponDb, _itemDb, _toolDb);
+        GameDB.Initialize(_weaponDb, _itemDb, _toolDb, _shopDb);
 
         // После этого в любом скрипте проекта можно писать:
         // GameDB.Weapons.GetByID("...");

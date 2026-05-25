@@ -19,7 +19,6 @@ namespace SlimeRpgEvolution2D.UI.Popups
         [Header("UI Settings")]
         [SerializeField] private ShopItemPresenter _itemPrefab;
         [SerializeField] private Transform _container;
-
         [SerializeField] private List<ShopTabButton> _tabButtons;
 
         private readonly List<ShopItemPresenter> _activeItems = new List<ShopItemPresenter>();
@@ -60,81 +59,63 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
         private void InitializeShop()
         {
-            if (DataManager.Instance == null || GameDB.Weapons == null) return;
+            if (DataManager.Instance == null || GameDB.Shop == null) return;
 
             foreach (var item in _activeItems)
             {
                 if (item != null)
                 {
-                    item.UpgradeRequested -= HandleUpgradeRequest;
+                    item.UpgradeRequested -= HandleUpgradeRequest; 
                     Destroy(item.gameObject);
                 }
             }
             _activeItems.Clear();
 
-            if (_currentTab == ShopTabType.Weapons)
+            List<ShopProductConfig> productsToShow = GameDB.Shop.GetProductsForTab(_currentTab);
+
+            foreach (var product in productsToShow)
             {
-                foreach (var config in GameDB.Weapons.AllEntries)
-                {
-                    if (config == null) continue;
-                    CreateWeaponItem(config);
-                }
-            }
-            else if (_currentTab == ShopTabType.Inventory)
-            {
-                foreach (var config in GameDB.Tools.AllEntries)
-                {
-                    if (config == null) continue;
-                    CreateToolItem(config);
-                }
+                if (product == null) continue;
+                CreateShopItem(product);
             }
         }
 
-        private void CreateWeaponItem(WeaponConfig config)
+        private void CreateShopItem(ShopProductConfig product)
         {
             var itemUI = Instantiate(_itemPrefab, _container);
 
-            int currentLvl = DataManager.Instance.GetWeaponLevel(config.weaponID);
-            bool canAfford = DataManager.Instance.SaveData.Coins >= config.GetUpgradePrice(currentLvl);
+            // Проверяем, хватает ли денег на текущий (динамический) ценник товара
+            bool canAfford = DataManager.Instance.SaveData.Coins >= product.GetCurrentPrice();
 
-            itemUI.Initialize(config, currentLvl, canAfford);
+            // Передаем универсальный продукт в UI префаба
+            itemUI.Initialize(product, canAfford);
             itemUI.UpgradeRequested += HandleUpgradeRequest;
 
             _activeItems.Add(itemUI);
         }
 
-        private void CreateToolItem(ToolConfig config)
+
+        private void HandleUpgradeRequest(ShopProductConfig product)
         {
-            var itemUI = Instantiate(_itemPrefab, _container);
+            if (product == null) return;
 
-            bool isOwned = false;
-            if (config.itemID == "backpac_01")
-            {
-                isOwned = DataManager.Instance.SaveData.IsInventoryUnlocked;
-            }
+            // Если предмет уже куплен (актуально для рюкзаков), ничего не делаем
+            if (product.IsPurchasedOrMax()) return;
 
-            bool canAfford = DataManager.Instance.SaveData.Coins >= config.basePurchasePrice;
-        }
+            int price = product.GetCurrentPrice();
 
-
-        private void HandleUpgradeRequest(WeaponConfig config)
-        {
-            int currentLvl = DataManager.Instance.GetWeaponLevel(config.weaponID);
-            int price = config.GetUpgradePrice(currentLvl);
-
+            // Проверяем баланс и списываем монеты
             if (DataManager.Instance.TrySpendCoins(price))
             {
-                int nextLvl = currentLvl + 1;
-                DataManager.Instance.SetWeaponLevel(config.weaponID, nextLvl);
+                // Продукт САМ знает, что делать: поднять уровень меча, разблокировать рюкзак или выдать сферу
+                product.Buy();
 
-                DataManager.Instance.SaveGame();
-
-                RefreshAllItems(DataManager.Instance.SaveData.Coins);//
+                // Обновляем всю витрину (цены, доступность кнопок)
+                RefreshAllItems(DataManager.Instance.SaveData.Coins);
 
                 if (Player.Local != null) Player.Local.RefreshUI();
 
-                Debug.Log($"[Shop] Куплено: {config.displayName} до уровня {nextLvl}");
-
+                Debug.Log($"[Shop] Успешно куплен товар: {product.DisplayName}");
             }
         }
 
@@ -142,19 +123,25 @@ namespace SlimeRpgEvolution2D.UI.Popups
         {
             foreach (var item in _activeItems)
             {
-                int lvl = DataManager.Instance.GetWeaponLevel(item.Config.weaponID);
-                bool canAfford = currentCoin >= item.Config.GetUpgradePrice(lvl);
+                if (item == null || item.Config == null) continue;
 
-                item.UpdateUI(lvl, canAfford);
+                // Проверяем баланс для обновленной цены товара
+                bool canAfford = currentCoin >= item.Config.GetCurrentPrice();
+
+                // Даем UI команду перерисовать кнопку и цену
+                item.UpdateUI(canAfford);
             }
         }
+
 
         private void OnDisable()
         {
             DataManager.OnCoinsChanged -= RefreshAllItems;
 
             foreach (var item in _activeItems)
-                item.UpgradeRequested -= HandleUpgradeRequest;
+            {
+                if (item != null) item.UpgradeRequested -= HandleUpgradeRequest;
+            }
         }
 
         private bool _isOpen = false;

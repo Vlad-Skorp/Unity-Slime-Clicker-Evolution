@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a07c2d2dc60212e4aa31e38b5a138a34, type: 3}
+  m_Name: ShopDatabase
+  m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ShopDatabase
+  weaponsList:
+  - {fileID: 11400000, guid: 9fb4d19e41e5de84b8007ab1d5961663, type: 2}
+  - {fileID: 11400000, guid: c86ac7e6329dc5d4cb7179d9192d567f, type: 2}
+  toolsList:
+  - {fileID: 11400000, guid: dab7f163cf9aa7e4cbc9156509404775, type: 2}
+  inventoryItemsList: []

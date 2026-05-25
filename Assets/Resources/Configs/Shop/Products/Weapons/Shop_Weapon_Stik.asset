@@ -9,13 +9,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 28635c0c899c02943b7f161f89d43e12, type: 3}
-  m_Name: Shop_Stick
-  m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ShopProductConfig
+  m_Script: {fileID: 11500000, guid: db7206d1111a7a24a8f19c87bcc4da95, type: 3}
+  m_Name: Shop_Weapon_Stik
+  m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ShopWeaponProduct
+  canBeSold: 1
   tabCategory: 0
-  purchasePrice: 150
   weaponReference: {fileID: 11400000, guid: 9c2f89331a87a384688c4a06b0d0c6c8, type: 2}
-  toolReference: {fileID: 0}
-  inventoryItemID: 
-  inventoryItemName: 
-  inventoryItemSprite: {fileID: 0}
+  basePurchasePrice: 10
+  priceMultiplier: 1.2

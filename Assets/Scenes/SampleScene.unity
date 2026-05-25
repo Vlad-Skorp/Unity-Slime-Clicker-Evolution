@@ -1402,6 +1402,7 @@ MonoBehaviour:
   _weaponDb: {fileID: 11400000, guid: 2a86170bfe291d14c99320114cf89809, type: 2}
   _itemDb: {fileID: 11400000, guid: 7de363518c37dde419bc241f2017ec38, type: 2}
   _toolDb: {fileID: 11400000, guid: fca228c0fe7a52846a44905057621acd, type: 2}
+  _shopDb: {fileID: 11400000, guid: d86e0ffc54fb5484daf454fe4d4785d6, type: 2}
 --- !u!1 &452058073
 GameObject:
   m_ObjectHideFlags: 0
