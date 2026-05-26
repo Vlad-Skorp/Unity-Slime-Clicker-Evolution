@@ -77,20 +77,25 @@ namespace SlimeRpgEvolution2D.Logic.Effects
             if (dropResult.itemConfig != null && _backpackPrefab != null)
             {
                 // ИСПРАВЛЕНО: Теперь берем реальный статус из ваших сохранений!
-                bool isInventoryUnlocked = false;
+                bool isBackpackAlreadyDropped = false;
 
                 if (DataManager.Instance != null && DataManager.Instance.SaveData != null)
                 {
-                    isInventoryUnlocked = DataManager.Instance.SaveData.IsInventoryUnlocked;
+                    isBackpackAlreadyDropped = DataManager.Instance.SaveData.IsBackpackDropped;
                 }
 
-                // Рюкзак выпадает только в том случае, если инвентарь у игрока ещё заблокирован
-                if (!isInventoryUnlocked)
+                // Рюкзак выпадает только если выпал первый лут И рюкзак ЕЩЁ НИ РАЗУ не появлялся на земле!
+                if (!isBackpackAlreadyDropped)
                 {
                     GameObject backpackGo = Instantiate(_backpackPrefab, _coinPanelTransform.parent);
                     if (backpackGo.TryGetComponent<SlimeRpgEvolution2D.Logic.Effects.ClickableBackpack>(out var clickableBackpack))
                     {
                         clickableBackpack.Initialize(screenPos);
+
+                        // СРАЗУ фиксируем в DataManager, что рюкзак БЫЛ ЗАСПАВНЕН на землю.
+                        // Это защитит от спавна второго рюкзака, если игрок убьет еще одного моба, 
+                        // не успев кликнуть по первому рюкзаку!
+                        DataManager.Instance.SetBackpackDropped(true);
                     }
                 }
             }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace SlimeRpgEvolution2D.Data
@@ -5,6 +6,8 @@ namespace SlimeRpgEvolution2D.Data
     [CreateAssetMenu(fileName = "NewBackPack", menuName = "Config/Entities/ToolConfig/BackPack")]
     public class BackpackConfig : ToolConfig
     {
+        public static event Action OnBackpackPurchased;
+
         // Рюкзак проверяет ваше свойство IsInventoryUnlocked
         public override bool IsPurchased()
         {
@@ -17,6 +20,8 @@ namespace SlimeRpgEvolution2D.Data
         {
             if (DataManager.Instance == null) return;
             DataManager.Instance.UnlockInventory();
+
+            OnBackpackPurchased?.Invoke();
         }
     }
 }

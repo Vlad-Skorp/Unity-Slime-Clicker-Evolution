@@ -34,8 +34,13 @@ namespace SlimeRpgEvolution2D.Data
     [System.Serializable]
     public class GameSaveData
     {
+        public const string CURRENT_VERSION_ID = "v0_2_0";
+
         [SerializeField] private int _coins;
         public int Coins => _coins;
+
+        [SerializeField] private bool _isBetaTester;
+        public bool IsBetaTester => _isBetaTester;
 
         [SerializeField] private List<WeaponSaveData> _weapons = new List<WeaponSaveData>();
         public IReadOnlyList<WeaponSaveData> Weapons => _weapons;
@@ -47,6 +52,9 @@ namespace SlimeRpgEvolution2D.Data
         [SerializeField] private bool _isInventoryUnlocked;
         public bool IsInventoryUnlocked => _isInventoryUnlocked;
 
+        [SerializeField] private bool _isBackpackDropped;
+        public bool IsBackpackDropped => _isBackpackDropped;
+
         public string selectedCharacterID = "DefaultPlayer";
 
         public GameSaveData()
@@ -56,6 +64,11 @@ namespace SlimeRpgEvolution2D.Data
             _weapons = new List<WeaponSaveData>();
             _inventoryItems = new List<InventoryItemSaveData>();
             _isInventoryUnlocked = false;
+
+            _isBackpackDropped = false;
+
+
+            _isBetaTester = false;
         }
 
         public void UpdateCoins(int amount, DataManager.AccessKey key)
@@ -80,6 +93,18 @@ namespace SlimeRpgEvolution2D.Data
         {
             if (key == null) return;
             _isInventoryUnlocked = isUnlocked;
+        }
+
+        public void UpdateBackpackDropStatus(bool isDropped, DataManager.AccessKey key)
+        {
+            if (key == null) return;
+            _isBackpackDropped = isDropped;
+        }
+
+        public void SetBetaTesterStatus(bool status, DataManager.AccessKey key)
+        {
+            if (key == null) return;
+            _isBetaTester = status;
         }
     }    
 }

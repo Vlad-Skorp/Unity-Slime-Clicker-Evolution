@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4bd9020843b8e8347a8caa799dd2a139, type: 3}
   m_Name: Shop_Tool_Backpack
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ShopToolProduct
-  canBeSold: 1
+  _defaultCanBeSold: 1
   tabCategory: 1
   toolReference: {fileID: 11400000, guid: 82f7e61142327e84082896afe0bdf310, type: 2}
-  fixedPrice: 500
+  fixedPrice: 250

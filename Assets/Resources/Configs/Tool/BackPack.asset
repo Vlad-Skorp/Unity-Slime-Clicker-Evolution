@@ -15,4 +15,3 @@ MonoBehaviour:
   itemID: Tool_01
   displayName: "\u0420\u044E\u043A\u0437\u0430\u043A"
   itemSprite: {fileID: 3224543062672247854, guid: 5f68e627626c99d43aeefe3e39eda918, type: 3}
-  basePurchasePrice: 100

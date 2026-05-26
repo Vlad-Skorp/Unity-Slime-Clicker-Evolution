@@ -12,4 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 806a2e1ca0c898e43b8a64fccd3d7912, type: 3}
   m_Name: ToolDatabase
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ToolDatabase
-  _allEntries: []
+  _allEntries:
+  - {fileID: 11400000, guid: 82f7e61142327e84082896afe0bdf310, type: 2}

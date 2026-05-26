@@ -22,7 +22,7 @@ namespace SlimeRpgEvolution2D.UI.Popups
         [SerializeField] private List<ShopTabButton> _tabButtons;
 
         private readonly List<ShopItemPresenter> _activeItems = new List<ShopItemPresenter>();
-        private ShopTabType _currentTab = ShopTabType.Weapons; //Вкладка по умолчанию
+        private static ShopTabType _currentTab = ShopTabType.Weapons; 
 
         [Header("Animations")]
         [SerializeField] private CanvasGroup _canvasGroup;
@@ -30,6 +30,10 @@ namespace SlimeRpgEvolution2D.UI.Popups
         [SerializeField] private float _animationDuration = 0.2f;
 
         private Coroutine _animationRoutine;
+
+
+
+        [SerializeField] private GameObject _inventoryTabButtonObject;
 
         private void OnEnable()
         {
@@ -42,11 +46,36 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
             DataManager.OnCoinsChanged += RefreshAllItems;
 
-            SelectTab(ShopTabType.Weapons);
+            bool hasBackpack = DataManager.Instance.SaveData.IsBackpackDropped;
+            if (_inventoryTabButtonObject != null)
+            {
+                _inventoryTabButtonObject.SetActive(hasBackpack);
+            }
+
+            SelectTab(_currentTab, forceRefresh: true);
+
+            if (_animationRoutine != null) StopCoroutine(_animationRoutine);
+            _animationRoutine = StartCoroutine(AnimateShop(0f, 1f, 0.8f, 1f));
         }
 
-        public void SelectTab(ShopTabType tabType)
+        private void OnDisable()
         {
+            DataManager.OnCoinsChanged -= RefreshAllItems;
+
+            foreach (var item in _activeItems)
+            {
+                if (item != null) item.UpgradeRequested -= HandleUpgradeRequest;
+            }
+        }
+
+        public void SelectTab(ShopTabType tabType, bool forceRefresh = false)
+        {
+            if (_currentTab == tabType && !forceRefresh)
+            {
+                return;
+            }
+
+
             _currentTab = tabType;
 
             foreach(var button in _tabButtons)
@@ -133,46 +162,36 @@ namespace SlimeRpgEvolution2D.UI.Popups
             }
         }
 
-
-        private void OnDisable()
+        public void OpenShopOnTab(ShopTabType tabType)
         {
-            DataManager.OnCoinsChanged -= RefreshAllItems;
-
-            foreach (var item in _activeItems)
+            if (UIManager.Instance != null)
             {
-                if (item != null) item.UpgradeRequested -= HandleUpgradeRequest;
+                UIManager.Instance.ToggleShop();
             }
-        }
 
-        private bool _isOpen = false;
-
-        public void ToggleShop()
-        {
-            _isOpen = !_isOpen;
-
-            if (_isOpen)
+            if (_inventoryTabButtonObject != null && tabType == ShopTabType.Inventory)
             {
-                gameObject.SetActive(true);
-                if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-                _animationRoutine = StartCoroutine(AnimateShop(0, 1, 0.8f, 1f));
+                _inventoryTabButtonObject.SetActive(true);
             }
-            else
-            {
-                if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-                // Запускаем обратную анимацию и передаем callback на выключение
-                _animationRoutine = StartCoroutine(AnimateShop(1, 0, 1f, 0.8f, () =>
-                {
-                    gameObject.SetActive(false);
-                }));
-            }
+
+            SelectTab(tabType);
         }
 
         public void CloseShop()
         {
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-            // Запускаем обратную анимацию и передаем callback на выключение
-            _animationRoutine = StartCoroutine(AnimateShop(1, 0, 1f, 0.8f, () => {
+
+            // Сначала проигрываем анимацию закрытия, а затем уведомляем UIManager
+            _animationRoutine = StartCoroutine(AnimateShop(1f, 0f, 1f, 0.8f, () =>
+            {
+                // ИЗМЕНЕНО: Сначала полностью выключаем объект магазина
                 gameObject.SetActive(false);
+
+                // ИЗМЕНЕНО: Говорим менеджеру, что окно закрылось, чтобы он проверил слой попапов
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.NotifyWindowClosed();
+                }
             }));
         }
 

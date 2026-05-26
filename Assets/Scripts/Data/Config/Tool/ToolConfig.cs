@@ -10,7 +10,6 @@ namespace SlimeRpgEvolution2D.Data
 
         public string displayName;
         public Sprite itemSprite;
-        public int basePurchasePrice;
 
         // 1. Метод проверки: куплен ли этот конкретный предмет?
         public abstract bool IsPurchased();

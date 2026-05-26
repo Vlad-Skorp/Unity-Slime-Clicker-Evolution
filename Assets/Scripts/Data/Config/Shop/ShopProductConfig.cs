@@ -8,7 +8,9 @@ namespace SlimeRpgEvolution2D.Data
     {
         [Header("Настройки витрины")]
         [Tooltip("Если снять галочку, предмет исчезнет из магазина")]
-        public bool canBeSold = true;
+        [SerializeField] private bool _defaultCanBeSold = true;
+
+        public virtual bool CanBeSold => _defaultCanBeSold;
 
         [Tooltip("В какой вкладке магазина будет находиться этот предмет")]
         public ShopTabType tabCategory;

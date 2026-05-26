@@ -3,14 +3,32 @@ using UnityEngine;
 
 namespace SlimeRpgEvolution2D.Data
 {
-    // --- 2. ТОВАР: ИНСТРУМЕНТ (РЮКЗАК) ---
+    // --- 2. ТОВАР: УНИВЕРСАЛЬНЫЙ ИНСТРУМЕНТ (Подходит и для Кирки, и для Рюкзака!) ---
     [CreateAssetMenu(fileName = "Shop_Tool_", menuName = "Config/Shop/Products/Tool")]
     public class ShopToolProduct : ShopProductConfig
     {
         [Header("Настройки Инструмента")]
-        [Tooltip("Перетащите сюда ToolConfig этого рюкзака")]
+        [Tooltip("Перетащите сюда ЛЮБОЙ ToolConfig (включая BackpackConfig)")]
         public ToolConfig toolReference;
         public int fixedPrice = 500;
+
+        // ПЕРЕОПРЕДЕЛЯЕМ ДОСТУПНОСТЬ НА ПРИЛАВКЕ:
+        public override bool CanBeSold
+        {
+            get
+            {
+                if (DataManager.Instance == null) return false;
+
+                // УМНАЯ ПРОВЕРКА: Если этот ассет — рюкзак, то проверяем, выпал ли он с земли
+                if (toolReference is BackpackConfig)
+                {
+                    return DataManager.Instance.SaveData.IsBackpackDropped;
+                }
+
+                // Для всех остальных инструментов (кирки, топоры) товар доступен в магазине всегда по умолчанию
+                return true;
+            }
+        }
 
         public override string ID => toolReference != null ? toolReference.itemID : string.Empty;
         public override string DisplayName => toolReference != null ? toolReference.displayName : "Неизвестный инструмент";
@@ -20,17 +38,20 @@ namespace SlimeRpgEvolution2D.Data
 
         public override bool IsPurchasedOrMax()
         {
-            // Рюкзак проверяет, разблокирован ли он уже
+            // Благодарим полиморфизм: если это рюкзак, вызовется переопределенный метод из BackpackConfig!
             return toolReference != null && toolReference.IsPurchased();
         }
 
         public override void Buy()
         {
-            if (toolReference == null) return;
+            if (toolReference == null || DataManager.Instance == null) return;
 
-            // Логика рюкзака: открывает инвентарь (вызывает OnPurchase)
+            // Магазин просто говорит абстрактному предмету: "Тебя купили!"
             toolReference.OnPurchase();
+
+            // И сохраняет прогресс в JSON
             DataManager.Instance.SaveGame();
         }
+
     }
 }

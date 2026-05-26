@@ -1,6 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using SlimeRpgEvolution2D.Data;
+using SlimeRpgEvolution2D.UI.Popups;
 
 namespace SlimeRpgEvolution2D.Logic.Effects
 {
@@ -53,15 +55,18 @@ namespace SlimeRpgEvolution2D.Logic.Effects
             transform.DOScale(Vector3.zero, 0.3f).SetEase(Ease.InBack).OnComplete(() =>
             {
                 // ИСПРАВЛЕНО: Находим менеджер магазина, даже если его игровой объект (ShopPanel) полностью выключен!
+                if (DataManager.Instance != null)
+                {
+                    // Вызываем созданный метод-мост, который сам применит ключ доступа
+                    DataManager.Instance.SetBackpackDropped(true);
+                    DataManager.Instance.SaveGame();
+                }
+
                 var shop = Object.FindAnyObjectByType<SlimeRpgEvolution2D.UI.Popups.ShopManager>(FindObjectsInactive.Include);
 
                 if (shop != null)
                 {
-                    // Активируем сначала сам объект панели, чтобы методы анимации сработали корректно
-                    shop.gameObject.SetActive(true);
-
-                    // Вызываем ваш метод открытия/анимации магазина
-                    shop.ToggleShop();
+                    shop.OpenShopOnTab(ShopTabType.Inventory);
 
                     Debug.Log("[Рюкзак] Успешно найден скрытый ShopManager, открываю магазин.");
                 }

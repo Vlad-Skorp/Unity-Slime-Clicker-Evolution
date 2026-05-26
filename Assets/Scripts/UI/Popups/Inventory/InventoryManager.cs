@@ -1,9 +1,11 @@
+using SlimeRpgEvolution2D.Data;
+using SlimeRpgEvolution2D.UI.Core;
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
-using SlimeRpgEvolution2D.Data;
 using UnityEngine.PlayerLoop;
+using UnityEngine.UI;
 
 namespace SlimeRpgEvolution2D.UI.Popups
 {
@@ -32,19 +34,37 @@ namespace SlimeRpgEvolution2D.UI.Popups
         [SerializeField] private TextMeshProUGUI _infoNameText;
         [SerializeField] private TextMeshProUGUI _infoDescText;
 
+        [Header("Animations Settings")]
+        [SerializeField] private CanvasGroup _canvasGroup;   // Перетащите сюда CanvasGroup инвентаря
+        [SerializeField] private Transform _windowContent;   // Перетащите сюда внутренний контент окна для скейла
+        [SerializeField] private float _animationDuration = 0.2f; // Длительность анимации (как в магазине)
+
+        private Coroutine _animationRoutine;
 
         private void OnEnable()
         {
             if(_infoWindow != null) _infoWindow.SetActive(false);
             InitializeInventory();
+
+            if (_animationRoutine != null) StopCoroutine(_animationRoutine);
+            _animationRoutine = StartCoroutine(AnimateInventory(0f, 1f, 0.8f, 1f));
+        }
+
+        private void OnDisable()
+        {
+            foreach (var slot in _activeSlots)
+                if (slot != null) slot.SlotSelected -= HandleSlotSelection;
         }
 
         private void InitializeInventory()
         {
             foreach(var slot in _activeSlots)
             {
-                slot.SlotSelected -= HandleSlotSelection;
-                Destroy(slot.gameObject);
+                if (slot != null)
+                {
+                    slot.SlotSelected -= HandleSlotSelection;
+                    Destroy(slot.gameObject);
+                }
             }
             _activeSlots.Clear();
 
@@ -97,10 +117,64 @@ namespace SlimeRpgEvolution2D.UI.Popups
             }
         }
 
-        private void OnDisable()
+        public void CloseInventory()
         {
-            foreach (var slot in _activeSlots)
-                slot.SlotSelected -= HandleSlotSelection;
+            if (_animationRoutine != null) StopCoroutine(_animationRoutine);
+
+            // Сначала проигрываем анимацию закрытия, затем передаем управление UIManager
+            _animationRoutine = StartCoroutine(AnimateInventory(1f, 0f, 1f, 0.8f, () =>
+            {
+                // ИЗМЕНЕНО: Выключаем объект инвентаря по завершении анимации
+                gameObject.SetActive(false);
+
+                // ИЗМЕНЕНО: Уведомляем UIManager для корректного скрытия затемнения/слоя
+                if (UIManager.Instance != null)
+                {
+                    UIManager.Instance.NotifyWindowClosed();
+                }
+            }));
+        }
+
+        private IEnumerator AnimateInventory(float startAlpha, float endAlpha, float startScale, float endScale, System.Action onComplete = null)
+        {
+            float elapsed = 0;
+            while (elapsed < _animationDuration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / _animationDuration;
+
+                // Плавность через SmoothStep (как в вашем ShopManager)
+                float curve = Mathf.SmoothStep(0, 1, t);
+
+                if (_canvasGroup != null) _canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, curve);
+                if (_windowContent != null) _windowContent.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, curve);
+
+                yield return null;
+            }
+
+            if (_canvasGroup != null) _canvasGroup.alpha = endAlpha;
+            if (_windowContent != null) _windowContent.localScale = Vector3.one * endScale;
+
+            onComplete?.Invoke();
+            _animationRoutine = null;
+        }
+
+        [System.Obsolete("Используйте UIManager.Instance.ToggleInventory для открытия инвентаря")]
+        public void OpenInventory() => ToggleInventory();
+
+        [System.Obsolete("Используйте UIManager.Instance.ToggleInventory для переключения инвентаря")]
+        public void ToggleInventory()
+        {
+            if (DataManager.Instance == null || !DataManager.Instance.SaveData.IsInventoryUnlocked)
+            {
+                Debug.LogWarning("[Inventory] Попытка открыть инвентарь без купленного рюкзака!");
+                return;
+            }
+
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.ToggleInventory();
+            }
         }
     }
 }

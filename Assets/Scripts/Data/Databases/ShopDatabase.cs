@@ -29,7 +29,7 @@ namespace SlimeRpgEvolution2D.Data
             // 1. Проверяем список оружия
             foreach (var weapon in weaponsList)
             {
-                if (weapon != null && weapon.canBeSold && weapon.tabCategory == tabType)
+                if (weapon != null && weapon.CanBeSold && weapon.tabCategory == tabType)
                 {
                     filtered.Add(weapon);
                 }
@@ -38,7 +38,7 @@ namespace SlimeRpgEvolution2D.Data
             // 2. Проверяем список инструментов
             foreach (var tool in toolsList)
             {
-                if (tool != null && tool.canBeSold && tool.tabCategory == tabType)
+                if (tool != null && tool.CanBeSold && tool.tabCategory == tabType)
                 {
                     filtered.Add(tool);
                 }
@@ -47,7 +47,7 @@ namespace SlimeRpgEvolution2D.Data
             // 3. Проверяем список обычных предметов (сфер)
             foreach (var item in inventoryItemsList)
             {
-                if (item != null && item.canBeSold && item.tabCategory == tabType)
+                if (item != null && item.CanBeSold && item.tabCategory == tabType)
                 {
                     filtered.Add(item);
                 }

@@ -1,15 +1,16 @@
 using SlimeRpgEvolution2D.Data;
 using System;
-using System.IO;
-using UnityEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using UnityEngine;
+
 public class DataManager : MonoBehaviour
 {
     public static DataManager Instance { get; private set; }
 
     [Header("Settings")]
-    [SerializeField] private string fileName = "save_data.json";
+    [SerializeField] private string baseFileName = "save_data";
     [SerializeField] private bool useEncryption = false;
 
     [Header("Configs")]
@@ -28,9 +29,9 @@ public class DataManager : MonoBehaviour
     public event Action OnDataLoaded;
 
     public static event Action<int> OnCoinsChanged;
-    private string SavePath => Path.Combine(Application.persistentDataPath, fileName);
+    private string OldSavePath => Path.Combine(Application.persistentDataPath, "save_data.json");
 
-
+    private string CurrentSavePath => Path.Combine(Application.persistentDataPath, $"{baseFileName}_{GameSaveData.CURRENT_VERSION_ID}.json");
 
 
     public class AccessKey { private AccessKey() { } internal static AccessKey Create() => new(); }
@@ -60,8 +61,8 @@ public class DataManager : MonoBehaviour
         try
         {
             string json = JsonUtility.ToJson(SaveData, true);
-            File.WriteAllText(SavePath, json);
-            Debug.Log($"[DataManager] Data saved to: {SavePath}");
+            File.WriteAllText(CurrentSavePath, json);
+            Debug.Log($"[DataManager] Data saved to: {CurrentSavePath}");
         }
         catch (Exception e)
         {
@@ -71,37 +72,53 @@ public class DataManager : MonoBehaviour
 
     public void LoadGame()
     {
-
-        if (!File.Exists(SavePath))
+        if (File.Exists(CurrentSavePath))
         {
-            Debug.Log("[DataManager] Файл сохранения не найден. Создаем новый профиль.");
-            CreateNewProfile();
+            try
+            {
+                string json = File.ReadAllText(CurrentSavePath);
+                SaveData = JsonUtility.FromJson<GameSaveData>(json);
+
+                if (SaveData == null)
+                {
+                    Debug.LogError("[DataManager] Ошибка парсинга JSON текущей версии. Создаем новый профиль.");
+                    CreateNewProfile();
+                }
+                else
+                {
+                    Debug.Log($"[DataManager] Данные версии ({GameSaveData.CURRENT_VERSION_ID}) успешно загружены.");
+                }
+            }
+            catch (Exception e)
+            {
+                Debug.LogError($"[DataManager] Load error: {e.Message}");
+                CreateNewProfile();
+            }
+
             OnDataLoaded?.Invoke();
             return;
         }
 
-        try
+        if (File.Exists(OldSavePath))
         {
-            string json = File.ReadAllText(SavePath);
-            SaveData = JsonUtility.FromJson<GameSaveData>(json);
+            Debug.Log("[DataManager] Обнаружено сохранение старой версии! Начинаем чистую игру v0_2_0 со статусом ветерана.");
 
-            if (SaveData == null)
-            {
-                Debug.LogError("[DataManager] Ошибка парсинга JSON. Создаем новый профиль.");
-                CreateNewProfile();
-            }
-            else 
-            {
-                Debug.Log("[DataManager] Данные успешно загружены.");
-            }
-        }
-        catch (Exception e)
-        {
-            Debug.LogError($"[DataManager] Load error: {e.Message}");
-            CreateNewProfile();
+            // Создаем чистый профиль с нуля (сброс прогресса для нового баланса)
+            SaveData = new GameSaveData();
+
+            // Награждаем скрытым статусом тестера беты
+            SaveData.SetBetaTesterStatus(true, _token);
+
+            // Сохраняем, чтобы зафиксировать файл save_data_v0_2_0.json на диске
+            SaveGame();
+
+            OnDataLoaded?.Invoke();
+            return;
         }
 
-
+        // Сценарий 3: Абсолютно новый игрок (нет никаких сохранений вообще)
+        Debug.Log("[DataManager] Файлов сохранения не найдено. Создаем чистый профиль для нового игрока.");
+        CreateNewProfile();
         OnDataLoaded?.Invoke();
     }
 
@@ -227,6 +244,19 @@ public class DataManager : MonoBehaviour
         SaveGame();
     }
 
+    public void SetBackpackDropped(bool isDropped)
+    {
+        if (SaveData == null) return;
+
+        // Передаем приватный токен _token, сгенерированный в Awake
+        SaveData.UpdateBackpackDropStatus(isDropped, _token);
+
+        // Сразу сохраняем изменения на жесткий диск
+        SaveGame();
+
+        Debug.Log($"<color=cyan>[DataManager]</color> Статус выпадения рюкзака изменен на: {isDropped}");
+    }
+
 
 #if UNITY_EDITOR
     [ContextMenu("Debug/Add 1000 Coins")]
@@ -245,7 +275,7 @@ public class DataManager : MonoBehaviour
     [ContextMenu("Debug/Full Reset Data")]
     public void ResetData()
     {
-        if (File.Exists(SavePath)) File.Delete(SavePath);
+        if (File.Exists(CurrentSavePath)) File.Delete(CurrentSavePath);
         CreateNewProfile();
         Debug.Log("<color=red>Данные полностью удалены и сброшены!</color>");
     }
