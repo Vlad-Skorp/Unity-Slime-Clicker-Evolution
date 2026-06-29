@@ -44,7 +44,7 @@ namespace SlimeRpgEvolution2D.UI.Popups
                 return;
             }
 
-            DataManager.OnCoinsChanged += RefreshAllItems;
+            DataManager.OnCoinsChanged += _ => RefreshAllItems();
 
             bool hasBackpack = DataManager.Instance.SaveData.IsBackpackDropped;
             if (_inventoryTabButtonObject != null)
@@ -55,12 +55,17 @@ namespace SlimeRpgEvolution2D.UI.Popups
             SelectTab(_currentTab, forceRefresh: true);
 
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-            _animationRoutine = StartCoroutine(AnimateShop(0f, 1f, 0.8f, 1f));
+
+            // Вызываем общий метод анимации из UIAnimationHelper
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 0f, 1f, 0.8f, 1f, _animationDuration
+            ));
+
         }
 
         private void OnDisable()
         {
-            DataManager.OnCoinsChanged -= RefreshAllItems;
+            DataManager.OnCoinsChanged -= _ => RefreshAllItems();
 
             foreach (var item in _activeItems)
             {
@@ -114,7 +119,8 @@ namespace SlimeRpgEvolution2D.UI.Popups
             var itemUI = Instantiate(_itemPrefab, _container);
 
             // Проверяем, хватает ли денег на текущий (динамический) ценник товара
-            bool canAfford = DataManager.Instance.SaveData.Coins >= product.GetCurrentPrice();
+            bool canAfford = DataManager.Instance.CanAfford(product.GetCurrentPrice());
+
 
             // Передаем универсальный продукт в UI префаба
             itemUI.Initialize(product, canAfford);
@@ -129,18 +135,37 @@ namespace SlimeRpgEvolution2D.UI.Popups
             if (product == null) return;
 
             // Если предмет уже куплен (актуально для рюкзаков), ничего не делаем
-            if (product.IsPurchasedOrMax()) return;
+            if (product.IsPurchasedOrMax())
+            {
+                RefreshAllItems(); // На всякий случай принудительно делаем кнопку серой
+                return;
+            }
 
-            int price = product.GetCurrentPrice();
+            BigNumber price = product.GetCurrentPrice();
 
             // Проверяем баланс и списываем монеты
             if (DataManager.Instance.TrySpendCoins(price))
             {
+                int itemsCountBefore = _activeItems.Count;
+
                 // Продукт САМ знает, что делать: поднять уровень меча, разблокировать рюкзак или выдать сферу
                 product.Buy();
 
-                // Обновляем всю витрину (цены, доступность кнопок)
-                RefreshAllItems(DataManager.Instance.SaveData.Coins);
+                int itemsCountAfter = GameDB.Shop.GetProductsForTab(_currentTab).Count;
+
+
+                if (itemsCountAfter > itemsCountBefore)
+                {
+                    // Если открылся новый секретный меч — перестраиваем магазин полностью
+                    InitializeShop();
+                    Debug.Log("[Shop] Открылось новое секретное оружие! Витрина полностью перестроена.");
+                }
+                else
+                {
+                    // ИСПРАВЛЕНО: Теперь мы не передаем голые монеты int. 
+                    // Мы просто вызываем метод обновления, а он сам спросит у DataManager актуальный баланс!
+                    RefreshAllItems();
+                }
 
                 if (Player.Local != null) Player.Local.RefreshUI();
 
@@ -148,19 +173,21 @@ namespace SlimeRpgEvolution2D.UI.Popups
             }
         }
 
-        private void RefreshAllItems(int currentCoin)
+        // ИСПРАВЛЕНО: Убрали аргумент (int currentCoin), так как он больше не нужен
+        private void RefreshAllItems()
         {
             foreach (var item in _activeItems)
             {
                 if (item == null || item.Config == null) continue;
 
-                // Проверяем баланс для обновленной цены товара
-                bool canAfford = currentCoin >= item.Config.GetCurrentPrice();
+                // ИСПРАВЛЕНО: Проверяем баланс для обновленной цены товара через наш всеядный DataManager
+                bool canAfford = DataManager.Instance.CanAfford(item.Config.GetCurrentPrice());
 
                 // Даем UI команду перерисовать кнопку и цену
                 item.UpdateUI(canAfford);
             }
         }
+
 
         public void OpenShopOnTab(ShopTabType tabType)
         {
@@ -175,50 +202,33 @@ namespace SlimeRpgEvolution2D.UI.Popups
             }
 
             SelectTab(tabType);
+
+            // ВЫЗЫВАЕМ ОБЩИЙ ХЕЛПЕР НА ОТКРЫТИЕ:
+            if (_animationRoutine != null) StopCoroutine(_animationRoutine);
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 0f, 1f, 0.8f, 1f, _animationDuration
+            ));
         }
 
         public void CloseShop()
         {
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
 
-            // Сначала проигрываем анимацию закрытия, а затем уведомляем UIManager
-            _animationRoutine = StartCoroutine(AnimateShop(1f, 0f, 1f, 0.8f, () =>
-            {
-                // ИЗМЕНЕНО: Сначала полностью выключаем объект магазина
-                gameObject.SetActive(false);
-
-                // ИЗМЕНЕНО: Говорим менеджеру, что окно закрылось, чтобы он проверил слой попапов
-                if (UIManager.Instance != null)
+            // ВЫЗЫВАЕМ ОБЩИЙ ХЕЛПЕР НА ЗАКРЫТИЕ:
+            // Передаем все параметры окна и финальное действие в наш универсальный метод
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 1f, 0f, 1f, 0.8f, _animationDuration, () =>
                 {
-                    UIManager.Instance.NotifyWindowClosed();
+                    gameObject.SetActive(false);
+
+                    if (UIManager.Instance != null)
+                    {
+                        UIManager.Instance.NotifyWindowClosed();
+                    }
                 }
-            }));
+            ));
         }
 
 
-        private IEnumerator AnimateShop(float startAlpha, float endAlpha, float startScale, float endScale, System.Action onComplete = null)
-        {
-            float elapsed = 0;
-            while (elapsed < _animationDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / _animationDuration;
-
-                // Плавность через кривую (по желанию можно добавить SmoothStep)
-                float curve = Mathf.SmoothStep(0, 1, t);
-
-                _canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, curve);
-                _windowContent.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, curve);
-                yield return null;
-            }
-
-            _canvasGroup.alpha = endAlpha;
-            _windowContent.localScale = Vector3.one * endScale;
-
-            onComplete?.Invoke();
-            _animationRoutine = null;
-        }
-
-        public void CloseShops() => UIManager.Instance.CloseAllPopups();
     }
 }

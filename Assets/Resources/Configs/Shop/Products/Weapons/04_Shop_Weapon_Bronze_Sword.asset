@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: db7206d1111a7a24a8f19c87bcc4da95, type: 3}
+  m_Name: 04_Shop_Weapon_Bronze_Sword
+  m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.ShopWeaponProduct
+  _defaultCanBeSold: 1
+  tabCategory: 0
+  weaponReference: {fileID: 11400000, guid: a84773273ec54b943a35771c224ce0df, type: 2}
+  basePurchasePrice:
+    _array: 30750000000000000000000000000000
+  priceMultiplier: 1.3
+  _maxWeaponLevel: 25

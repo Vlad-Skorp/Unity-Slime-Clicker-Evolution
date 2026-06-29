@@ -43,12 +43,17 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
         private void OnEnable()
         {
-            if(_infoWindow != null) _infoWindow.SetActive(false);
+            if (_infoWindow != null) _infoWindow.SetActive(false);
             InitializeInventory();
 
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-            _animationRoutine = StartCoroutine(AnimateInventory(0f, 1f, 0.8f, 1f));
+
+            // ВЫЗЫВАЕМ ОБЩИЙ ХЕЛПЕР: Передаем компоненты этого окна в универсальную анимацию открытия
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 0f, 1f, 0.8f, 1f, _animationDuration
+            ));
         }
+
 
         private void OnDisable()
         {
@@ -107,74 +112,38 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
             if (_infoWindow != null) _infoWindow.SetActive(true);
 
-            if (_infoNameText != null) _infoNameText.text = config.displayName;
-            if (_infoDescText != null) _infoDescText.text = config.description;
+            if (_infoNameText != null) _infoNameText.text = config.DisplayName;
+            if (_infoDescText != null) _infoDescText.text = config.Description;
 
             if (_infoIcon != null)
             {
-                _infoIcon.sprite = config.itemSprite;
-                _infoIcon.enabled = config.itemSprite != null;
+                _infoIcon.sprite = config.Icon;
+                _infoIcon.enabled = config.Icon != null;
             }
         }
-
         public void CloseInventory()
         {
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
 
-            // Сначала проигрываем анимацию закрытия, затем передаем управление UIManager
-            _animationRoutine = StartCoroutine(AnimateInventory(1f, 0f, 1f, 0.8f, () =>
-            {
-                // ИЗМЕНЕНО: Выключаем объект инвентаря по завершении анимации
-                gameObject.SetActive(false);
-
-                // ИЗМЕНЕНО: Уведомляем UIManager для корректного скрытия затемнения/слоя
-                if (UIManager.Instance != null)
+            // Просто вызываем общую корутину из нашего хелпера!
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 1f, 0f, 1f, 0.8f, _animationDuration, () =>
                 {
-                    UIManager.Instance.NotifyWindowClosed();
+                    gameObject.SetActive(false);
+                    UIManager.Instance?.NotifyWindowClosed();
                 }
-            }));
+            ));
         }
 
-        private IEnumerator AnimateInventory(float startAlpha, float endAlpha, float startScale, float endScale, System.Action onComplete = null)
+        public void OpenInventoryDirect()
         {
-            float elapsed = 0;
-            while (elapsed < _animationDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / _animationDuration;
+            if (_animationRoutine != null) StopCoroutine(_animationRoutine);
+            gameObject.SetActive(true);
 
-                // Плавность через SmoothStep (как в вашем ShopManager)
-                float curve = Mathf.SmoothStep(0, 1, t);
-
-                if (_canvasGroup != null) _canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, curve);
-                if (_windowContent != null) _windowContent.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, curve);
-
-                yield return null;
-            }
-
-            if (_canvasGroup != null) _canvasGroup.alpha = endAlpha;
-            if (_windowContent != null) _windowContent.localScale = Vector3.one * endScale;
-
-            onComplete?.Invoke();
-            _animationRoutine = null;
-        }
-
-        [System.Obsolete("Используйте UIManager.Instance.ToggleInventory для открытия инвентаря")]
-        public void OpenInventory() => ToggleInventory();
-
-        [System.Obsolete("Используйте UIManager.Instance.ToggleInventory для переключения инвентаря")]
-        public void ToggleInventory()
-        {
-            if (DataManager.Instance == null || !DataManager.Instance.SaveData.IsInventoryUnlocked)
-            {
-                Debug.LogWarning("[Inventory] Попытка открыть инвентарь без купленного рюкзака!");
-                return;
-            }
-
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.ToggleInventory();
-            }
+            // Вызываем общую корутину на открытие
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 0f, 1f, 0.8f, 1f, _animationDuration
+            ));
         }
     }
 }

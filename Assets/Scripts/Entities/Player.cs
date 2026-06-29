@@ -15,13 +15,14 @@ public class Player : MonoBehaviour
 
     public static Player Local;
 
-    public int Coins => (DataManager.Instance != null && DataManager.Instance.SaveData != null)
-    ? DataManager.Instance.SaveData.Coins
-    : 0;
-    public int CurrentDamage => DataManager.Instance.GetCurrentDamage();
+    public BigNumber Coins => (DataManager.Instance != null && DataManager.Instance.SaveData != null)
+       ? DataManager.Instance.SaveData.Coins
+       : new BigNumber(0);
 
-    public event Action<int> OnCoinChanged;
-    public event Action<int> OnDamageChanged;
+    public BigNumber CurrentDamage => DataManager.Instance.GetCurrentDamage();
+
+    public event Action<BigNumber> OnCoinChanged;
+    public event Action<BigNumber> OnDamageChanged;
 
     public static event Action OnStatsChanged;
     public static event Action OnAttackPerformed;
@@ -64,12 +65,18 @@ public class Player : MonoBehaviour
         }
     }
 
-    public void AddCoins(int amount)
+    public void AddCoins(BigNumber amount)
     {
+        if (DataManager.Instance == null) return;
+
+        // Напрямую передаем всю гигантскую сумму в кошелек сохранения
         DataManager.Instance.AddCoins(amount);
 
+        // Вызываем событие изменения монет, передавая обновленную структуру в UI
         OnCoinChanged?.Invoke(this.Coins);
     }
+
+
 
     public void RefreshDamage()
     {
@@ -87,13 +94,32 @@ public class Player : MonoBehaviour
 
     private void OnEnable()
     {
-        GlobalEvents.OnMoneyEarned += AddCoins;
+        // Переводим подписку на вынесенный метод вместо безымянной лямбды
+        GlobalEvents.OnMoneyEarned += HandleMoneyReward;
         GlobalEvents.OnTargetCliked += PerformAttack;
     }
 
     private void OnDisable()
     {
-        GlobalEvents.OnMoneyEarned -= AddCoins;
+        // ИСПРАВЛЕНО: Теперь мы честно и полностью отписываемся от ОБОИХ событий.
+        // Никаких "призраков" и скрытого удвоения золота в редакторе больше не будет!
+        GlobalEvents.OnMoneyEarned -= HandleMoneyReward;
         GlobalEvents.OnTargetCliked -= PerformAttack;
+    }
+
+    private void HandleMoneyReward(BigNumber coinReward)
+    {
+        // Вызываем ваш собственный метод, который обновит DataManager и дернет OnCoinChanged
+        AddCoins(coinReward);
+    }
+
+    private void OnDestroy()
+    {
+        // Если этот конкретный объект игрока уничтожается (например, при смене сцены),
+        // зануляем статическую ссылку, чтобы она не указывала на удаленную память
+        if (Local == this)
+        {
+            Local = null;
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace SlimeRpgEvolution2D.Data
@@ -5,28 +6,38 @@ namespace SlimeRpgEvolution2D.Data
     [CreateAssetMenu(fileName = "NewWeapon", menuName = "Config/Entities/WeaponConfig")]
     public class WeaponConfig : ScriptableObject, IIdentifiable<string>
     {
-        public string weaponID;
+        [SerializeField] private string weaponID;
         public string ID => weaponID;
 
 
-        public string displayName;
-        public string DisplayName => displayName;
+        [SerializeField] private string weaponName;
+        public string DisplayName => weaponName;
 
-        public int baseDamageBonus;
+        [Header("Damage Settings")]
+        [SerializeField] private BigNumber baseDamageBonus;
+        public BigNumber BaseDamageBonus => baseDamageBonus;
 
 
-        public Sprite weaponSprite;
+        [SerializeField] private Sprite weaponSprite;
         public Sprite Icon => weaponSprite;
 
 
         [Header("Progression Setings")]
         [Tooltip("Коэффицент роста за прокачку")]
-        public float damageMultiplier = 1.2f;
+        [SerializeField] private float damageMultiplier = 1.2f;
 
-        public int GetDamageAtLevel(int level)
+        public BigNumber GetDamageAtLevel(int level)
         {
-            if (level <= 0) return 0;
-            return Mathf.RoundToInt(baseDamageBonus * Mathf.Pow(damageMultiplier, level - 1));
+            if (level <= 0) return new BigNumber(0);
+
+            // 1. Распаковываем базовую структуру урона оружия в чистый double (собираем все этажи)
+            double baseDamageDouble = baseDamageBonus.ToDouble();
+
+            // 2. Считаем экспоненциальный рост уровня на основе чистого double
+            double calculatedDamage = baseDamageDouble * Math.Pow((double)damageMultiplier, level - 1);
+
+            // 3. Запаковываем итоговый double обратно в структуру BigNumber для всей остальной игры
+            return new BigNumber(calculatedDamage);
         }
     }
 }

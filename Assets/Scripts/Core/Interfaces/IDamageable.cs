@@ -1,3 +1,4 @@
+using SlimeRpgEvolution2D.Data;
 using System;
 
 namespace SlimeRpgEvolution2D.Core
@@ -6,7 +7,10 @@ namespace SlimeRpgEvolution2D.Core
     {
         event Action<float> OnHealthChanged;
 
-        void TakeDamage(int damage);
+        BigNumber CurrentHealth { get; }
+        BigNumber MaxHealth { get; }
+
+        void TakeDamage(BigNumber damage);
         bool IsDead { get; }
 
         

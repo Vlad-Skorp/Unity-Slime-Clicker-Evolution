@@ -12,10 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2de4d4523c78794fbe81253a58e2568, type: 3}
   m_Name: Slime_04
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
-  enemyName: Fire_Slime
-  maxHealth: 150
-  goldReward: 100
+  enemyName: "\u0418\u0441\u043A\u043E\u0440\u043A\u0430"
+  maxHealth:
+    _array: 96000000000000000000000000000000
+  goldReward:
+    _array: 64000000000000000000000000000000
   enemySprite: {fileID: -3271797694918516673, guid: ed75d1e3ba7eed549be1114a24c827e1, type: 3}
+  maxlevel: 25
+  levelEvolution:
+  - level: 0
+    levelHpMyltipley: 1.7
+    levelCoinMyltipley: 1.3
   droppedLootPrefab: {fileID: 2350217537594031356, guid: 8a935c9cbb9e0e44aa5c88e28311fa76, type: 3}
   goldCoinSprite: {fileID: -4408744087201691700, guid: 0c6b2f8be0c2bf64892e7b48ab1bf107, type: 3}
   availableLoot:

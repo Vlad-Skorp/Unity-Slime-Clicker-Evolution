@@ -32,25 +32,31 @@ namespace SlimeRpgEvolution2D.UI.Popups
             if (_config == null) return;
 
             // 1. Получаем актуальную цену (фиксированную или прогрессивную от уровня)
-            int price = _config.GetCurrentPrice();
+            BigNumber currentPrice = _config.GetCurrentPrice();
 
             // 2. Формируем строку состояния (Lvl.X для мечей, пусто или "Куплено" для рюкзака)
             string stateText = string.Empty;
-            string priceText = $"{price} <sprite name=\"Coin_1\">";
+            // На кнопке теперь будет красиво: "500", "12.5M", "15B" или "1T"!
+            string priceText = $"{NumberFormatter.Format(currentPrice)} <sprite name=\"Coin_1\">";
             bool isInteractable = canAfford;
 
             // Если товар — оружие, вытягиваем его уровень для отображения
             if (_config is ShopWeaponProduct weaponProduct)
             {
                 int currentLevel = DataManager.Instance.GetWeaponLevel(weaponProduct.ID);
-                stateText = $"Lvl.{currentLevel}";
+                stateText = $"Lvl. {currentLevel}";
             }
             else if (_config.IsPurchasedOrMax())
             {
-                stateText = "Куплено";
-                priceText = "Макс.";
-                isInteractable = false; // Блокируем кнопку, так как рюкзак одноразовый
+                stateText = "Куплено"; // Текст для рюкзаков
             }
+
+            if (_config.IsPurchasedOrMax())
+            {
+                priceText = "<color=#ff4d4d>Макс.</color>";
+                isInteractable = false; // Намертво блокируем кнопку, она станет серой
+            }
+
 
             _view.SetData(
                 _config.Icon,

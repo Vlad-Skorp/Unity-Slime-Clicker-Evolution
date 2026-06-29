@@ -38,8 +38,13 @@ namespace SlimeRpgEvolution2D.UI.Popups
         private void OnEnable()
         {
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
-            _animationRoutine = StartCoroutine(AnimateSettings(0f, 1f, 0.8f, 1f));
+
+            // ВЫЗЫВАЕМ ОБЩИЙ ХЕЛПЕР: Передаем компоненты этого окна в универсальную анимацию открытия
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 0f, 1f, 0.8f, 1f, _animationDuration
+            ));
         }
+        
 
         private void Start()
         {
@@ -105,39 +110,20 @@ namespace SlimeRpgEvolution2D.UI.Popups
         {
             if (_animationRoutine != null) StopCoroutine(_animationRoutine);
 
-            // Проигрываем анимацию закрытия (уменьшение и растворение)
-            _animationRoutine = StartCoroutine(AnimateSettings(1f, 0f, 1f, 0.8f, () =>
-            {
-                gameObject.SetActive(false); // Выключаем объект только после конца анимации
-
-                if (UIManager.Instance != null)
+            // ВЫЗЫВАЕМ ОБЩИЙ ХЕЛПЕР НА ЗАКРЫТИЕ:
+            _animationRoutine = StartCoroutine(UIAnimationHelper.AnimateWindow(
+                _canvasGroup, _windowContent, 1f, 0f, 1f, 0.8f, _animationDuration, () =>
                 {
-                    UIManager.Instance.NotifyWindowClosed(); // Проверяем, нужно ли скрыть подложку
+                    gameObject.SetActive(false); // Выключаем объект только после конца анимации
+
+                    if (UIManager.Instance != null)
+                    {
+                        UIManager.Instance.NotifyWindowClosed(); // Проверяем, нужно ли скрыть подложку
+                    }
                 }
-            }));
+            ));
         }
 
-        private IEnumerator AnimateSettings(float startAlpha, float endAlpha, float startScale, float endScale, System.Action onComplete = null)
-        {
-            float elapsed = 0;
-            while (elapsed < _animationDuration)
-            {
-                elapsed += Time.deltaTime;
-                float t = elapsed / _animationDuration;
-                float curve = Mathf.SmoothStep(0, 1, t);
-
-                if (_canvasGroup != null) _canvasGroup.alpha = Mathf.Lerp(startAlpha, endAlpha, curve);
-                if (_windowContent != null) _windowContent.localScale = Vector3.one * Mathf.Lerp(startScale, endScale, curve);
-
-                yield return null;
-            }
-
-            if (_canvasGroup != null) _canvasGroup.alpha = endAlpha;
-            if (_windowContent != null) _windowContent.localScale = Vector3.one * endScale;
-
-            onComplete?.Invoke();
-            _animationRoutine = null;
-        }
     }
 }
 

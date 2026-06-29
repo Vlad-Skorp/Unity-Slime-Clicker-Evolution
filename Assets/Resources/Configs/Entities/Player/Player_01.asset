@@ -14,5 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::PlayerConfig
   _characterID: DefaultPlayer
   _characterName: DefaultPlayer
-  _baseDamage: 1
+  _baseDamage:
+    _array: 01000000000000000000000000000000
   allWeapons: []

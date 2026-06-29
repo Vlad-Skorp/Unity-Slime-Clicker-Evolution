@@ -20,7 +20,7 @@ namespace SlimeRpgEvolution2D.Data
         public abstract string DisplayName { get; }
         public abstract Sprite Icon { get; }
 
-        public abstract int GetCurrentPrice();
+        public abstract BigNumber GetCurrentPrice();
         public abstract bool IsPurchasedOrMax();
         public abstract void Buy();
     }

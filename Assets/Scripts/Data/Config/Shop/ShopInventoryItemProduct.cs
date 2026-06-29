@@ -11,13 +11,13 @@ namespace SlimeRpgEvolution2D.Data
         public string inventoryItemID;
         public string inventoryItemName;
         public Sprite inventoryItemSprite;
-        public int fixedPrice = 50;
+        public BigNumber fixedPrice;
 
         public override string ID => inventoryItemID;
         public override string DisplayName => inventoryItemName;
         public override Sprite Icon => inventoryItemSprite;
 
-        public override int GetCurrentPrice() => fixedPrice;
+        public override BigNumber GetCurrentPrice() => fixedPrice;
 
         public override bool IsPurchasedOrMax() => false; // Сферы можно покупать бесконечно
 
@@ -27,7 +27,6 @@ namespace SlimeRpgEvolution2D.Data
 
             // Логика сферы: просто улетает в инвентарь игрока
             DataManager.Instance.AddItemToSave(inventoryItemID, 1);
-            DataManager.Instance.SaveGame();
         }
     }
 }

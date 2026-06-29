@@ -42,7 +42,16 @@ namespace SlimeRpgEvolution2D.Logic.Effects
             // 1. СПАВН ВИЗУАЛЬНЫХ МОНЕТОК
             if (config.goldCoinSprite != null)
             {
-                int visualCoinsCount = Mathf.Min(5, Mathf.CeilToInt((float)config.goldReward / 5f));
+                // ИСПРАВЛЕНО: Для расчета количества вылетающих монеток берем базовый интовый сегмент.
+                // Если в старших ячейках (миллиарды/триллионы) есть хоть что-то — гарантированно выбиваем максимум (5 монеток).
+                int baseGoldAmount = config.GoldReward.GetSegment(0);
+                if (config.GoldReward.GetSegment(1) > 0 || config.GoldReward.GetSegment(2) > 0 || config.GoldReward.GetSegment(3) > 0)
+                {
+                    baseGoldAmount = 100; // Искусственно выставляем много, чтобы сработал Mathf.Min(5, ...)
+                }
+
+                // Честно считаем количество визуальных монеток (от 1 до 5 штучек)
+                int visualCoinsCount = Mathf.Min(5, Mathf.CeilToInt((float)baseGoldAmount / 5f));
 
                 for (int i = 0; i < visualCoinsCount; i++)
                 {
@@ -60,7 +69,7 @@ namespace SlimeRpgEvolution2D.Logic.Effects
 
 
             // 2. СПАВН ВИЗУАЛЬНЫХ ПРЕДМЕТОВ (ЯДЕР)
-            if (dropResult.itemConfig != null && dropResult.itemConfig.itemSprite != null)
+            if (dropResult.itemConfig != null && dropResult.itemConfig.Icon != null)
             {
                 GameObject itemGo = Instantiate(config.droppedLootPrefab, _coinPanelTransform.parent);
                 itemGo.transform.position = screenPos;
@@ -68,7 +77,7 @@ namespace SlimeRpgEvolution2D.Logic.Effects
 
                 if (itemGo.TryGetComponent<DroppedLoot>(out var droppedLoot))
                 {
-                    droppedLoot.Initialize(dropResult.itemConfig.itemSprite, Vector3.zero, false);
+                    droppedLoot.Initialize(dropResult.itemConfig.Icon, Vector3.zero, false);
                 }
             }
 

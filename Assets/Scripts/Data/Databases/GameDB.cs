@@ -1,5 +1,3 @@
-
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace SlimeRpgEvolution2D.Data
@@ -14,7 +12,15 @@ namespace SlimeRpgEvolution2D.Data
 
         public static ShopDatabase Shop { get; internal set; }
 
-        public static void Initialize(WeaponDatabase weaponDb, ItemDatabase itemDb, ToolDatabase toolDb, ShopDatabase shopDb)
+        public static LevelDatabase Level { get; internal set; }
+
+        public static void Initialize(
+            WeaponDatabase weaponDb,
+            ItemDatabase itemDb,
+            ToolDatabase toolDb,
+            ShopDatabase shopDb,
+            LevelDatabase levelsDb)
+
         {
             Weapons = weaponDb;
             if(Weapons != null) Weapons.Initialize();
@@ -26,6 +32,9 @@ namespace SlimeRpgEvolution2D.Data
             if (Tools != null) Tools.Initialize();
 
             Shop = shopDb;
+
+            Level = levelsDb;
+            if (Level != null) Level.Initialize();
 
             Debug.Log("<color=green>[GameDB]</color> Все базы данных успешно подключены!");
         }

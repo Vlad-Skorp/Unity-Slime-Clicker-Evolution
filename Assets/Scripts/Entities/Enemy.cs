@@ -9,7 +9,15 @@ public class Enemy : MonoBehaviour, IDamageable
     [Header("Config")]
     [SerializeField] private EnemyConfig _config;
 
-    private int _currentHealth;
+    private int _enemyRpgLevel;
+    private BigNumber _maxHealth;
+    private BigNumber _currentHealth;
+
+    public BigNumber CurrentHealth => _currentHealth;
+    public BigNumber MaxHealth => _maxHealth;
+
+    private BigNumber _dynamicGoldReward;
+
 
     [Header("Graphics")]
     [SerializeField] private SpriteRenderer _spriteRenderer;
@@ -20,15 +28,22 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public event Action<float> OnHealthChanged;
 
+    public static event Action<string, int> OnEnemySpawnedUI;
 
-    public static event Action<int> OnEnemyKilled;
     public static event Action OnDeathAnimationComplete;
 
-    public void Initialize(EnemyConfig config)
+    public void Initialize(EnemyConfig config, Sprite enemySprite, BigNumber calculatedMaxHp, BigNumber calculatedGold, int currentLevel)
     {
         _config = config;
-        _currentHealth = _config.maxHealth;
-        _spriteRenderer.sprite = _config.enemySprite;
+        _maxHealth = calculatedMaxHp;       // Накопленное ХП для этого уровня
+        _currentHealth = _maxHealth;
+        _dynamicGoldReward = calculatedGold; // Увеличенное золото
+        _enemyRpgLevel = currentLevel;
+
+        _spriteRenderer.sprite = enemySprite;
+
+
+        UpdateColliderSize(enemySprite);
 
         IsDead = false;
         _animator.SetBool("IsDead", false);
@@ -37,6 +52,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
         _animator.SetTrigger("Respawn");
         OnHealthChanged?.Invoke(1f);
+
+        OnEnemySpawnedUI?.Invoke(_config.enemyName, _enemyRpgLevel);
     }
 
     public void SetCombatReady(bool isReady)
@@ -47,17 +64,35 @@ public class Enemy : MonoBehaviour, IDamageable
         if (_collider != null) _collider.enabled = isReady;
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(BigNumber damage)
     {
         if (IsDead) return;
 
-        Debug.Log($"[Damage] Слизень получил {damage} урона. Осталось HP: {_currentHealth}");
-        _currentHealth = Mathf.Max(0, _currentHealth - damage);
+        // 1. БЕЗОПАСНОЕ ВЫЧИТАНИЕ УРОНА ЧЕРЕЗ ОПЕРАТОР -=
+        // Оператор сам займет миллиарды из старших ячеек, если базовый сегмент уйдет в минус!
+        _currentHealth -= damage;
 
-        float healthPercent = (float)_currentHealth / _config.maxHealth;
-        OnHealthChanged?.Invoke(healthPercent);
+        // Для красивого лога используем ваш NumberFormatter или ToString() струкруты
+        Debug.Log($"[Damage] Слизень получил {NumberFormatter.Format(damage)} урона. Осталось HP: {NumberFormatter.Format(_currentHealth)}");
 
-        if (_currentHealth <= 0) Die();
+        // 2. РАСЧЕТ ПРОЦЕНТА ХП ДЛЯ ПОЛОСКИ СЛАЙДЕРА В UI
+        // Метод ToFloat() берет под контроль все 4 сегмента без риска переполнения разрядов double
+        float currentF = _currentHealth.ToFloat();
+        float maxF = _maxHealth.ToFloat();
+
+        float healthPercent = maxF > 0f ? (currentF / maxF) : 0f;
+
+        // Передаем правильный процент в UI. Ваша корутина SmoothUpdateBar теперь оживет!
+        OnHealthChanged?.Invoke(Mathf.Clamp01(healthPercent));
+
+        // 3. ПРОВЕРКА НА СМЕРТЬ
+        // Используем наш оператор сравнения <=. Если объект равен 0 или ушел в минус — он мертв
+        if (_currentHealth <= 0)
+        {
+            // На всякий случай страхуем кошелек здоровья чистым нулем перед смертью
+            _currentHealth = 0;
+            Die();
+        }
         else
         {
             int randomHit = UnityEngine.Random.Range(0, 3);
@@ -66,6 +101,7 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
+
     private void Die()
     {
         if (IsDead) return;
@@ -73,7 +109,10 @@ public class Enemy : MonoBehaviour, IDamageable
 
         _collider.enabled = false;
 
-        GlobalEvents.SendMoneyEarned(_config.goldReward);
+        GlobalEvents.SendMoneyEarned(_dynamicGoldReward);
+
+
+       
 
         // 2. РАСЧЕТ ДРОПА ПРЕДМЕТОВ МАТЕМАТИЧЕСКИ
         EnemyDropResult dropResult = _config.RollRandomDrop();
@@ -83,12 +122,12 @@ public class Enemy : MonoBehaviour, IDamageable
             ItemConfig droppedItem = dropResult.itemConfig;
             int amountToGive = dropResult.amount;
 
-            Debug.Log($"<color=green>[ДРОП ВЫПАЛ!]</color> Из слизня выпал предмет: <b>{droppedItem.displayName}</b> (ID: {droppedItem.itemID}) в количестве <b>х{amountToGive}</b>");
+            Debug.Log($"<color=green>[ДРОП ВЫПАЛ!]</color> Из слизня выпал предмет: <b>{droppedItem.DisplayName}</b> (ID: {droppedItem.ID}) в количестве <b>х{amountToGive}</b>");
 
             // --- ОТПРАВКА В ИНВЕНТАРЬ ---
             if (DataManager.Instance != null)
             {
-                DataManager.Instance.AddItemToSave(droppedItem.itemID, amountToGive);
+                DataManager.Instance.AddItemToSave(droppedItem.ID, amountToGive);
             }
             else
             {
@@ -117,9 +156,49 @@ public class Enemy : MonoBehaviour, IDamageable
     }
 
 
+
+
     public void FinalizeObject()
     {
         OnDeathAnimationComplete?.Invoke(); 
         Destroy(gameObject);
     }
+
+    [ContextMenu("Update Collider Size")]
+    private void UpdateColliderSizeDebug()
+    {
+        if (_spriteRenderer != null)
+        {
+            UpdateColliderSize(_spriteRenderer.sprite);
+        }
+    }
+
+    private void UpdateColliderSize(Sprite enemySprite)
+    {
+        if (_collider == null || enemySprite == null || _spriteRenderer == null) return;
+
+        // 1. Получаем размеры самого спрайта с учетом Pixels Per Unit
+        Bounds spriteBounds = enemySprite.bounds;
+
+        // 2. Учитываем масштаб (Scale) объекта, на котором висит SpriteRenderer (объект Visual)
+        Vector3 spriteScale = _spriteRenderer.transform.localScale;
+
+        // Вычисляем итоговую ширину и высоту в мировых координатах Unity
+        float realWidth = spriteBounds.size.x * spriteScale.x;
+        float realHeight = spriteBounds.size.y * spriteScale.y;
+
+        // 3. Устанавливаем точный размер CapsuleCollider2D под спрайт
+        _collider.size = new Vector2(realWidth, realHeight);
+
+        // 4. Считаем смещение (Offset) по Y.
+        // Так как Pivot выставлен в Bottom Center, центр капсулы должен быть строго на высоте половины спрайта.
+        // Также учитываем локальное смещение по Y самого объекта Visual (если оно есть)
+        float visualOffsetY = _spriteRenderer.transform.localPosition.y;
+        _collider.offset = new Vector2(0f, (realHeight / 2f) + visualOffsetY);
+
+        // 5. Автоматически разворачиваем капсулу: 
+        // Horizontal — для широких круглых слизней, Vertical — для высоких вытянутых врагов
+        _collider.direction = realWidth > realHeight ? CapsuleDirection2D.Horizontal : CapsuleDirection2D.Vertical;
+    }
+
 }

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using SlimeRpgEvolution2D.Data;
 using TMPro;
 using UnityEngine;
 
@@ -11,45 +12,39 @@ namespace SlimeRpgEvolution2D.UI.HUD
 
         public TextMeshProUGUI Text => _text;
 
-
-
-
-        [SerializeField] private bool _useCounting; 
+        [Header("Animation Settings")]
         [SerializeField] private float _duration = 0.3f;
 
-        private int _currentValue;
+
+        [SerializeField] private bool _useCounting;
 
         private Sequence _mainSequence;
 
-        public void SetValue(int value, bool animate)
+        public void SetValue(BigNumber coinsValue, bool animate)
         {
-            _mainSequence?.Kill(false);
+            // Используем наш глобальный NumberFormatter без дублирования кода!
+            string formattedText = NumberFormatter.Format(coinsValue);
+            SetValueText(formattedText, animate);
+        }
+
+        public void SetValueText(string textValue, bool animate)
+        {
+            _mainSequence?.Kill(true);
+
+            if (_text != null)
+            {
+                _text.text = textValue;
+            }
 
             if (animate)
             {
                 transform.localScale = Vector3.one;
-
                 _mainSequence = DOTween.Sequence();
-                _mainSequence.Join(transform.DOPunchScale(new Vector3(0.15f, -0.15f, 0), 0.2f));
-
-                if (_useCounting)
-                {
-                    _mainSequence.Join(DOTween.To(() => _currentValue, x => {
-                        _currentValue = x;
-                        _text.text = x.ToString();
-                    }, value, _duration).SetEase(Ease.OutQuad));
-                }
-                else
-                {
-                    _currentValue = value;
-                    _text.text = value.ToString();
-                }
+                _mainSequence.Join(transform.DOPunchScale(new Vector3(0.15f, -0.15f, 0), _duration));
             }
             else
             {
                 transform.localScale = Vector3.one;
-                _currentValue = value;
-                _text.text = value.ToString();
             }
         }
     }

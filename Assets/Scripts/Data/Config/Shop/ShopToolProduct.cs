@@ -10,7 +10,7 @@ namespace SlimeRpgEvolution2D.Data
         [Header("Настройки Инструмента")]
         [Tooltip("Перетащите сюда ЛЮБОЙ ToolConfig (включая BackpackConfig)")]
         public ToolConfig toolReference;
-        public int fixedPrice = 500;
+        public BigNumber fixedPrice;
 
         // ПЕРЕОПРЕДЕЛЯЕМ ДОСТУПНОСТЬ НА ПРИЛАВКЕ:
         public override bool CanBeSold
@@ -34,7 +34,7 @@ namespace SlimeRpgEvolution2D.Data
         public override string DisplayName => toolReference != null ? toolReference.displayName : "Неизвестный инструмент";
         public override Sprite Icon => toolReference != null ? toolReference.itemSprite : null;
 
-        public override int GetCurrentPrice() => fixedPrice;
+        public override BigNumber GetCurrentPrice() => fixedPrice;
 
         public override bool IsPurchasedOrMax()
         {
@@ -48,9 +48,6 @@ namespace SlimeRpgEvolution2D.Data
 
             // Магазин просто говорит абстрактному предмету: "Тебя купили!"
             toolReference.OnPurchase();
-
-            // И сохраняет прогресс в JSON
-            DataManager.Instance.SaveGame();
         }
 
     }

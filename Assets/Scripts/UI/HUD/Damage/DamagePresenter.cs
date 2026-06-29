@@ -1,4 +1,5 @@
 using DG.Tweening;
+using SlimeRpgEvolution2D.Data;
 using UnityEngine;
 
 namespace SlimeRpgEvolution2D.UI.HUD
@@ -7,12 +8,6 @@ namespace SlimeRpgEvolution2D.UI.HUD
     {
         protected override void Subscribe() => Player.Local.OnDamageChanged += HandleUpdate;
         protected override void Unsubscribe() => Player.Local.OnDamageChanged -= HandleUpdate;
-        protected override int GetCurrentValue() => Player.Local.CurrentDamage;
-
-
-        protected override void HandleUpdate(int amount)
-        {
-            base.HandleUpdate(amount); 
-        }
+        protected override BigNumber GetCurrentValue() => Player.Local.CurrentDamage;
     }
 }

@@ -26,12 +26,44 @@ namespace SlimeRpgEvolution2D.Data
         {
             List<ShopProductConfig> filtered = new List<ShopProductConfig>();
 
-            // 1. Проверяем список оружия
-            foreach (var weapon in weaponsList)
+            // =============================================================
+            // 1. ПРОВЕРКА ОРУЖИЯ С ЛОГИКОЙ ПОСТЕПЕННОГО ОТКРЫТИЯ
+            // =============================================================
+            for (int i = 0; i < weaponsList.Count; i++)
             {
-                if (weapon != null && weapon.CanBeSold && weapon.tabCategory == tabType)
+                var weapon = weaponsList[i];
+                if (weapon == null) continue;
+
+                // Если это оружие относится к другой вкладке (на всякий случай), просто пропускаем
+                if (weapon.tabCategory != tabType) continue;
+
+                // Если товар в принципе выключен через админку — пропускаем
+                if (!weapon.CanBeSold) continue;
+
+                // Получаем текущий уровень этого оружия у игрока из DataManager
+                int currentLevel = DataManager.Instance.GetWeaponLevel(weapon.ID);
+
+                // Условие 1: Самый первый меч в списке (i == 0) или уже купленный меч (currentLevel > 0) показываем ВСЕГДА
+                if (i == 0 || currentLevel > 0)
                 {
                     filtered.Add(weapon);
+                    continue;
+                }
+
+                // Условие 2: Если этот меч еще не куплен (уровень 0), проверяем предыдущий меч в списке инспектора
+                var previousWeapon = weaponsList[i - 1];
+                int previousWeaponLevel = DataManager.Instance.GetWeaponLevel(previousWeapon.ID);
+
+                // Если предыдущий меч прокачан хотя бы на 1 уровень, то текущий меч становится видимым в магазине
+                if (previousWeaponLevel > 0)
+                {
+                    filtered.Add(weapon);
+                }
+                else
+                {
+                    // КРИТИЧЕСКИЙ МОМЕНТ: Если прошлый меч не куплен, то текущий и ВСЕ СЛЕДУЮЩИЕ за ним мечи
+                    // остаются заблокированными. Прерываем цикл оружия досрочно!
+                    break;
                 }
             }
 

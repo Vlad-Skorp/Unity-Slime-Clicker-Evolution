@@ -27,7 +27,7 @@ namespace SlimeRpgEvolution2D.UI.Popups
 
         public void UpdateUI()
         {
-            Sprite iconSprite = (_config != null) ? _config.itemSprite : null;
+            Sprite iconSprite = (_config != null) ? _config.Icon : null;
 
             string amountString = $"x{_currentAmount}";
 

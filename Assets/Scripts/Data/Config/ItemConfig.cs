@@ -5,13 +5,19 @@ namespace SlimeRpgEvolution2D.Data
     [CreateAssetMenu(fileName = "NewItem", menuName = "Config/Entities/ItemConfig")]
     public class ItemConfig : ScriptableObject, IIdentifiable<string>
     {
-        public string itemID;
-
+        [SerializeField] private string itemID;
         public string ID => itemID;
 
-        public string displayName;
+        [SerializeField] private string displayName;
+        public string DisplayName => displayName;
+
+
         [TextArea(3,5)]
-        public string description;
-        public Sprite itemSprite;
+        [SerializeField] private string description;
+        public string Description => description;
+
+        [SerializeField]
+        private Sprite itemSprite;
+        public Sprite Icon => itemSprite;
     }
 }

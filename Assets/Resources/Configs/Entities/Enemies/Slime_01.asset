@@ -12,10 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f2de4d4523c78794fbe81253a58e2568, type: 3}
   m_Name: Slime_01
   m_EditorClassIdentifier: SlimeRpgEvolution2D_Game::SlimeRpgEvolution2D.Data.EnemyConfig
-  enemyName: Slime
-  maxHealth: 10
-  goldReward: 1
+  enemyName: "\u0411\u043E\u0431"
+  maxHealth:
+    _array: 0a000000000000000000000000000000
+  goldReward:
+    _array: 01000000000000000000000000000000
   enemySprite: {fileID: 7766275899223206993, guid: b471e3fa8e67213489370bc5923574ee, type: 3}
+  maxlevel: 25
+  levelEvolution:
+  - level: 0
+    levelHpMyltipley: 1.2
+    levelCoinMyltipley: 1.1
   droppedLootPrefab: {fileID: 2350217537594031356, guid: 8a935c9cbb9e0e44aa5c88e28311fa76, type: 3}
   goldCoinSprite: {fileID: -4408744087201691700, guid: 0c6b2f8be0c2bf64892e7b48ab1bf107, type: 3}
   availableLoot: []

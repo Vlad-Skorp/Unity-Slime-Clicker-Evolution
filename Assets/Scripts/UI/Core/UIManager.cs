@@ -1,7 +1,8 @@
-using UnityEngine;
-using UnityEngine.UI;
 using SlimeRpgEvolution2D.Data;
 using SlimeRpgEvolution2D.UI.Popups;
+using SlimeRpgEvolution2D.UI.World;
+using UnityEngine;
+using UnityEngine.UI;
 
 namespace SlimeRpgEvolution2D.UI.Core
 {
@@ -27,19 +28,27 @@ namespace SlimeRpgEvolution2D.UI.Core
         [Tooltip("Перетащите сюда игровой объект Настроек со сцены (SettingsPanel)")]
         [SerializeField] private SettingsManager _settingsWindow;
 
+        [SerializeField] private WorldManager _worldWindow;
+
+
         private void Awake()
         {
             if (Instance != null && Instance != this)
             {
                 Destroy(gameObject);
-                return; 
+                return;
             }
 
             Instance = this;
+
+            // Сначала принудительно вытаскиваем UIManager на самый верх иерархии сцены
+            transform.SetParent(null);
+
             DontDestroyOnLoad(gameObject);
 
             InitLayers();
         }
+
 
         private void Start()
         {
@@ -108,11 +117,11 @@ namespace SlimeRpgEvolution2D.UI.Core
             }
 
             // 3. Ищем инвентарь в слое попапов и плавно распахиваем его
-            if (_popupLayer != null)
+            if (UIManager.Instance != null)
             {
-                var inventoryManager = _popupLayer.GetComponentInChildren<InventoryManager>(true);
-                if (inventoryManager != null) inventoryManager.ToggleInventory();
+                UIManager.Instance.ToggleInventory();
             }
+
         }
 
         public void ToggleShop()
@@ -129,6 +138,8 @@ namespace SlimeRpgEvolution2D.UI.Core
                 // ИЗМЕНЕНО: Перед открытием жестко гасим соседа без анимации, чтобы они не накладывались
                 if (_inventoryWindow != null) _inventoryWindow.gameObject.SetActive(false);
                 if (_settingsWindow != null) _settingsWindow.gameObject.SetActive(false);
+                if (_worldWindow != null) _worldWindow.gameObject.SetActive(false);
+
 
                 _shopWindow.gameObject.SetActive(true);
                 if (_popupLayer != null) _popupLayer.SetActive(true);
@@ -150,6 +161,7 @@ namespace SlimeRpgEvolution2D.UI.Core
                 // ИЗМЕНЕНО: Перед открытием жестко гасим магазин и настройки
                 if (_shopWindow != null) _shopWindow.gameObject.SetActive(false);
                 if (_settingsWindow != null) _settingsWindow.gameObject.SetActive(false);
+                if (_worldWindow != null) _worldWindow.gameObject.SetActive(false);
 
                 _inventoryWindow.gameObject.SetActive(true);
                 if (_popupLayer != null) _popupLayer.SetActive(true);
@@ -168,50 +180,61 @@ namespace SlimeRpgEvolution2D.UI.Core
             {
                 if (_shopWindow != null) _shopWindow.gameObject.SetActive(false);
                 if (_inventoryWindow != null) _inventoryWindow.gameObject.SetActive(false);
+                if (_worldWindow != null) _worldWindow.gameObject.SetActive(false);
 
                 _settingsWindow.gameObject.SetActive(true);
                 if (_popupLayer != null) _popupLayer.SetActive(true);
             }
         }
 
+
+        public void ToggleWorld()
+        {
+            if (_worldWindow == null) return;
+
+            if (_worldWindow.gameObject.activeSelf)
+            {
+                // Если окно открыто — закрываем его с вашей встроенной анимацией
+                _worldWindow.CloseWindow();
+            }
+            else
+            {
+                // Если открывается карта миров — принудительно гасим ВСЕ остальные окна
+                if (_shopWindow != null) _shopWindow.gameObject.SetActive(false);
+                if (_inventoryWindow != null) _inventoryWindow.gameObject.SetActive(false);
+                if (_settingsWindow != null) _settingsWindow.gameObject.SetActive(false);
+
+                // Включаем карту и активируем слой затемнения (подложку)
+                _worldWindow.gameObject.SetActive(true);
+                if (_popupLayer != null) _popupLayer.SetActive(true);
+            }
+        }
+
+
         public void NotifyWindowClosed()
         {
             bool anyOpen = (_shopWindow != null && _shopWindow.gameObject.activeSelf) ||
                            (_inventoryWindow != null && _inventoryWindow.gameObject.activeSelf) ||
-                           (_settingsWindow != null && _settingsWindow.gameObject.activeSelf);
+                           (_settingsWindow != null && _settingsWindow.gameObject.activeSelf) ||
+                           (_worldWindow != null && _worldWindow.gameObject.activeSelf);
 
             if (!anyOpen && _popupLayer != null)
             {
                 _popupLayer.SetActive(false);
             }
         }
+
         public void CloseAllWindows()
         {
             if (_shopWindow != null) _shopWindow.gameObject.SetActive(false);
             if (_inventoryWindow != null) _inventoryWindow.gameObject.SetActive(false);
             if (_settingsWindow != null) _settingsWindow.gameObject.SetActive(false);
+            if (_worldWindow != null) _worldWindow.gameObject.SetActive(false);
 
             if (_popupLayer != null) _popupLayer.SetActive(false);
         }
 
 
-        public void OpenPopup(GameObject prefab)
-        {
-            if (prefab == null || _popupLayer == null) return;
-
-            _popupLayer.SetActive(true);
-
-            GameObject popup = Instantiate(prefab, _popupLayer.transform);
-        }
-
-        public void CloseAllPopups()
-        {
-            foreach (Transform child in _popupLayer.transform)
-            {
-                Destroy(child.gameObject);
-            }
-            _popupLayer.SetActive(false);
-        }
 
         public void ToggleHUD(bool isVisible)
         {

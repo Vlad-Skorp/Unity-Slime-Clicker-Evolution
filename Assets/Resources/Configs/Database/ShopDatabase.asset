@@ -15,6 +15,9 @@ MonoBehaviour:
   weaponsList:
   - {fileID: 11400000, guid: 9fb4d19e41e5de84b8007ab1d5961663, type: 2}
   - {fileID: 11400000, guid: c86ac7e6329dc5d4cb7179d9192d567f, type: 2}
+  - {fileID: 11400000, guid: 41f5d764bb3b25c418b3e8d6e633dc53, type: 2}
+  - {fileID: 11400000, guid: 593bede01a24f95419d5beaf6f8a4b99, type: 2}
+  - {fileID: 11400000, guid: 22571855984f862469a8e25c9f86ca14, type: 2}
   toolsList:
   - {fileID: 11400000, guid: dab7f163cf9aa7e4cbc9156509404775, type: 2}
   inventoryItemsList: []

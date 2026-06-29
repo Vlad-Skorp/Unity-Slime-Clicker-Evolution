@@ -14,25 +14,38 @@ namespace SlimeRpgEvolution2D.Data
 
 
         [Header("Damage Settings")]
-        [SerializeField] private int _baseDamage = 1;
-
-        public int BaseDamage => _baseDamage;
+        [SerializeField] private BigNumber _baseDamage;
+        public BigNumber BaseDamage => _baseDamage;
 
         public List<WeaponConfig> allWeapons;
 
-        public int CalculateTotalDamage(GameSaveData saveData)
+        public BigNumber CalculateTotalDamage(GameSaveData saveData)
         {
+            // Если данных нет, возвращаем бессмертный базовый урон
             if (saveData == null || saveData.Weapons == null || GameDB.Weapons == null)
                 return _baseDamage;
 
-            int weaponDamage = saveData.Weapons.Sum(savedWeapon =>
+            // Стартуем расчет с копии базового урона игрока
+            BigNumber totalDamage = BaseDamage;
+
+          
+
+            // В цикле поразрядно прибавляем урон от каждого прокачанного меча
+            foreach (var savedWeapon in saveData.Weapons)
             {
                 var config = GameDB.Weapons.GetByID(savedWeapon.weaponID);
+                if (config != null)
+                {
+                    // Получаем урон меча в BigNumber
+                    BigNumber weaponDamage = config.GetDamageAtLevel(savedWeapon.currentLevel);
 
-                return (config != null) ? config.GetDamageAtLevel(savedWeapon.currentLevel) : 0;;
-            });
+                    // Сливаем (складываем) урон меча с общим уроном персонажа "в столбик"
+                    totalDamage = totalDamage + weaponDamage;
+                }
+            }
 
-            return _baseDamage + weaponDamage;
+            return totalDamage;
         }
+
     }
 }

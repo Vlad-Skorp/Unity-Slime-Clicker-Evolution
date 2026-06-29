@@ -2,4 +2,5 @@
   <Project Path="SlimeRpgEvolution2D_Game.csproj" />
   <Project Path="DOTween.Modules.csproj" />
   <Project Path="Test.csproj" />
+  <Project Path="SlimeRpgEvolution2D_Editor.csproj" />
 </Solution>

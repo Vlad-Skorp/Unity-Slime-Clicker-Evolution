@@ -15,4 +15,5 @@ MonoBehaviour:
   _defaultCanBeSold: 1
   tabCategory: 1
   toolReference: {fileID: 11400000, guid: 82f7e61142327e84082896afe0bdf310, type: 2}
-  fixedPrice: 250
+  fixedPrice:
+    _array: fa000000000000000000000000000000
